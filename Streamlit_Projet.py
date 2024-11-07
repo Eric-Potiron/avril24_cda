@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# cd Potiron\"DATA ANALYST"\STREAMLIT
-# streamlit run Streamlit_Projet.py
 
 import io
 import warnings
@@ -105,7 +103,7 @@ elif page == pages[1]:
     st.write("### Jeux de données sources")
 
     if st.checkbox("### 📁 **Zonal annual means.csv**"):
-       df1 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Zonal annual means.csv', header=0)
+       df1 = load_csv('Zonal annual means.csv', header=0)
        rows_df1, cols_df1 = df1.shape # Lignes et colonnes
        num_duplicates_df1 = df1.duplicated().sum() # Doublons
        manquantes_df1 = df1.isna().sum().to_frame().T # Valeurs manquantes
@@ -145,7 +143,7 @@ elif page == pages[1]:
        st.write(df1.head())
 
     if st.checkbox("### 📁 **Southern Hemisphere-mean monthly, seasonal, and annual means.csv**"):
-       df5 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Southern Hemisphere-mean monthly, seasonal, and annual means.csv', header=1)
+       df5 = load_csv('Southern Hemisphere-mean monthly, seasonal, and annual means.csv', header=1)
        rows_df5, cols_df5 = df5.shape # Lignes et colonnes
        num_duplicates_df5 = df5.duplicated().sum() # Doublons
        manquantes_df5 = df5.isna().sum().to_frame().T # Valeurs manquantes
@@ -185,7 +183,7 @@ elif page == pages[1]:
        st.write(df5.head())
 
     if st.checkbox("### 📁 **Northern Hemisphere-mean monthly, seasonal, and annual means.csv**"):
-       df8 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Northern Hemisphere-mean monthly, seasonal, and annual means.csv', header=1)
+       df8 = load_csv('Northern Hemisphere-mean monthly, seasonal, and annual means.csv', header=1)
        rows_df8, cols_df8 = df8.shape # Lignes et colonnes
        num_duplicates_df8 = df8.duplicated().sum() # Doublons
        manquantes_df8 = df8.isna().sum().to_frame().T # Valeurs manquantes
@@ -225,7 +223,7 @@ elif page == pages[1]:
        st.write(df8.head())
 
     if st.checkbox("### 📁 **Global-mean monthly, seasonal, and annual means.csv**"):
-       df7 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Global-mean monthly, seasonal, and annual means.csv', header=1)
+       df7 = load_csv('Global-mean monthly, seasonal, and annual means.csv', header=1)
        rows_df7, cols_df7 = df7.shape # Lignes et colonnes
        num_duplicates_df7 = df7.duplicated().sum() # Doublons
        manquantes_df7 = df7.isna().sum().to_frame().T # Valeurs manquantes
@@ -265,7 +263,7 @@ elif page == pages[1]:
        st.write(df7.head())
 
     if st.checkbox("### 📁 **global-gdp-over-the-long-run.csv**"):
-       df_pib = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/global-gdp-over-the-long-run.csv', header=0)
+       df_pib = load_csv('global-gdp-over-the-long-run.csv', header=0)
        rows_df_pib, cols_df_pib = df_pib.shape # Lignes et colonnes
        num_duplicates_df_pib = df_pib.duplicated().sum() # Doublons
        manquantes_df_pib = df_pib.isna().sum().to_frame().T # Valeurs manquantes
@@ -294,7 +292,7 @@ elif page == pages[1]:
        st.write(df_pib.head())
 
     if st.checkbox("### 📁 **owid-co2-data.csv**"):
-       df4 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/owid-co2-data.csv', header=0)
+       df4 = load_csv('owid-co2-data.csv', header=0)
        rows_df4, cols_df4 = df4.shape # Lignes et colonnes
        num_duplicates_df4 = df4.duplicated().sum() # Doublons
        manquantes_df4 = df4.isna().sum().to_frame().T # Valeurs manquantes
@@ -359,7 +357,7 @@ elif page == pages[2]:
         display_sections = None  # Aucun bouton n'est cliqué, on laisse les checkboxes individuelles contrôler l'affichage
 
     if show_all or st.checkbox("Variations mondiales des températures globales par année") :
-        df1 = pd.read_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Zonal annual means.csv', header=0)
+        df1 = pd.read_csv('Zonal annual means.csv', header=0)
         plt.figure(figsize=(8, 4))
         plt.plot(df1['Year'], df1['Glob'], marker='.', linestyle='-', color='blue')
         plt.title('Variations mondiales des températures globales par année')
@@ -378,7 +376,7 @@ elif page == pages[2]:
         unsafe_allow_html=True)
 
     if show_all or st.checkbox("Variations mondiales des températures pour les hémisphères Nord et Sud") :
-        df1 = pd.read_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Zonal annual means.csv', header=0)
+        df1 = pd.read_csv('Zonal annual means.csv', header=0)
         plt.figure(figsize=(8, 4))
         plt.plot(df1['Year'], df1['NHem'], marker='.', linestyle='-', color='green', label='Hémisphère Nord')
         plt.plot(df1['Year'], df1['SHem'], marker='.', linestyle='-', color='orange', label='Hémisphère Sud')
@@ -399,7 +397,7 @@ elif page == pages[2]:
         unsafe_allow_html=True)
 
     if show_all or st.checkbox("Évolution du PIB mondial à partir de 1850"):
-        df_pib = pd.read_csv('C:/Potiron/DATA ANALYST/STREAMLIT/global-gdp-over-the-long-run.csv', header=0)
+        df_pib = pd.read_csv('global-gdp-over-the-long-run.csv', header=0)
         df_pib_1850 = df_pib[df_pib['Year'] >= 1850]
         df_pib_1850['GDP'] = df_pib_1850['GDP'].astype('float64')
         df_pib_1850['GDP'] = df_pib_1850['GDP'] / 1000000000
@@ -419,7 +417,7 @@ elif page == pages[2]:
         unsafe_allow_html=True)
 
     if show_all or st.checkbox("Total des émissions de CO² mondiales"):
-        df4 = pd.read_csv('C:/Potiron/DATA ANALYST/STREAMLIT/owid-co2-data.csv', header=0, sep=",")
+        df4 = pd.read_csv('owid-co2-data.csv', header=0, sep=",")
         df4_world = df4[df4['country'] == 'World']
         plt.figure(figsize=(8, 4))
         plt.plot(df4_world['year'], df4_world['co2_including_luc'], marker='.', linestyle='-', color='brown')
@@ -597,8 +595,8 @@ elif page == pages[3]:
     )
 
     # Chargement des fichiers CSV
-    df_co2 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/owid-co2-data.csv', header=0)
-    df_zonal = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/Zonal annual means.csv', header=0)
+    df_co2 = load_csv('owid-co2-data.csv', header=0)
+    df_zonal = load_csv('Zonal annual means.csv', header=0)
 
     # Filtrer pour ne garder que les données où 'country' est "World"
     df_co2 = df_co2[df_co2['country'] == 'World']
@@ -664,7 +662,7 @@ elif page == pages[4]:
     
     # Affiche le contenu en fonction de l'option sélectionnée
     elif option == "En-tête du data":
-        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        final_df = load_csv('final_df.csv', header=0)
         styled_df = final_df.head().style.format({
             final_df.columns[0]: "{:.0f}",
             final_df.columns[1]: "{:.2f}",
@@ -677,7 +675,7 @@ elif page == pages[4]:
         st.dataframe(styled_df)
 
     elif option == "Fin du data":
-        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        final_df = load_csv('final_df.csv', header=0)
         styled_df = final_df.tail().style.format({
             final_df.columns[0]: "{:.0f}",
             final_df.columns[1]: "{:.2f}",
@@ -690,24 +688,24 @@ elif page == pages[4]:
         st.dataframe(styled_df)
 
     elif option == "Dimensions":
-        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        final_df = load_csv('final_df.csv', header=0)
         rows, cols = final_df.shape
         st.write(f"Le dataframe contient {rows} lignes et {cols} colonnes.")
 
     elif option == "Informations":
-        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        final_df = load_csv('final_df.csv', header=0)
         buffer = io.StringIO()
         final_df.info(buf=buffer)
         s = buffer.getvalue()
         st.text(s)
 
     elif option == "Valeurs manquantes":
-        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        final_df = load_csv('final_df.csv', header=0)
         manquantes = final_df.isna().sum().to_frame().T
         st.dataframe(manquantes)
 
     elif option == "Doublons":
-        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        final_df = load_csv('final_df.csv', header=0)
         num_duplicates = final_df.duplicated().sum()
         st.write(f"Le nombre de doublons est de : {num_duplicates}")
 
@@ -722,7 +720,7 @@ elif page == pages[4]:
         """,
         unsafe_allow_html=True)
 
-    final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+    final_df = load_csv('final_df.csv', header=0)
     # Filtrage des données pour ne prendre en compte que celles à partir de l'année 1900
     filtered_final_df = final_df[final_df['Année'] >= 1900]
 
@@ -978,7 +976,7 @@ elif page == pages[5]:
 
     st.write("## Modélisations")
 
-    data = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df10.csv', header=0)
+    data = load_csv('final_df10.csv', header=0)
 
     # Description
     st.write("""
@@ -1077,7 +1075,7 @@ elif page == pages[6]:
 
     st.write("## Prédictions")
 
-    data = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df10.csv', header=0)
+    data = load_csv('final_df10.csv', header=0)
 
     # Description
     st.write("""
@@ -1231,7 +1229,7 @@ elif page == pages[7]:
     )
 
         # Charger les données ONU depuis votre fichier CSV
-    onu_population = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/onu_population.csv', sep=';', encoding='ISO-8859-1')
+    onu_population = load_csv('onu_population.csv', sep=';', encoding='ISO-8859-1')
 
     # Calcul du total de la population par année
     total_population_by_year = onu_population.groupby('Année')['Population'].sum()
@@ -1271,7 +1269,7 @@ elif page == pages[7]:
     )
 
         # Charger les données ONU depuis votre fichier CSV
-#    df4 = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/df4.csv')
+#    df4 = load_csv('df4.csv')
 #
     # Restreindre les données aux colonnes d'intérêt et aux années 1950 à 2022
 #   df_filtered = df4[(df4['Année'] >= 1950) & (df4['Année'] <= 2022)]
