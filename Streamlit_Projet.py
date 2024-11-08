@@ -83,7 +83,7 @@ if page == pages[0]:
             Évaluer les corrélations entre différents facteurs, tels que le PIB, la croissance démographique et les émissions de CO₂, pour identifier les relations clés influençant le climat.<br><br>
             Utiliser des modèles de régression et d'autres techniques analytiques pour prédire les variations futures des températures mondiales en fonction des données actuelles et des scénarios projetés.<br><br>
             Mettre en avant les limites et les défis de l'analyse de données environnementales, en insistant sur l'importance de la contextualisation des résultats et des modèles dans le cadre d'une compréhension plus large des phénomènes climatiques.<br><br>
-            Ce projet cherche à illustrer l'application concrète des compétences en data analyse pour contribuer à une meilleure compréhension des problématiques environnementales, tout en servant de base de réflexion pour développer des stratégies d'adaptation et de mitigation face au changement climatique.<br><br>
+            Ce projet cherche à illustrer l'application concrète des compétences en data analyse pour contribuer à une meilleure compréhension des problématiques environnementales, tout en servant de base de réflexion pour développer des stratégies d'adaptation face au changement climatique.<br><br>
             </span>
         Les 3 principaux gaz à effet de serre sont le dioxyde de carbone (CO²), le méthane (CH4) et le protoxyde d’azote (N²O). Le CO² est responsable de 65% de l’effet de serre anthropique, c’est-à-dire dû aux activités humaines.
         </p>
