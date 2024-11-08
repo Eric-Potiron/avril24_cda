@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-# import io
 import warnings
 import pickle
 
@@ -656,7 +655,7 @@ elif page == pages[4]:
     # Crée des boutons radio pour sélectionner l'option d'affichage
     option = st.selectbox(
         "",
-        ("Aucune sélection", "En-tête du data", "Fin du data", "Dimensions", "Informations", "Valeurs manquantes", "Doublons")
+        ("Aucune sélection", "En-tête du data", "Fin du data", "Informations", "Valeurs manquantes", "Doublons")
     )
     if option == "Aucune sélection":
         st.write(f"")
@@ -688,22 +687,19 @@ elif page == pages[4]:
         })
         st.dataframe(styled_df)
 
-    elif option == "Dimensions":
-        final_df = load_csv('final_df.csv', header=0)
+    elif option == "Informations":
+        final_df = load_csv('C:/Potiron/DATA ANALYST/STREAMLIT/final_df.csv', header=0)
+        df_info = pd.DataFrame({
+            "Type de données": final_df.dtypes,
+            "Nombre de non nuls": final_df.count(),
+            "Pourcentage de non nuls (%)": ((final_df.count() / len(final_df)) * 100).round(2),  # Pourcentage arrondi à 2 chiffres
+            "Nombre de valeurs uniques": final_df.nunique()
+        })
+        
+        st.table(df_info)
+        
         rows, cols = final_df.shape
         st.write(f"Le dataframe contient {rows} lignes et {cols} colonnes.")
-
-    elif option == "Informations":
-        final_df = load_csv('final_df.csv', header=0)
-        st.write("### Informations détaillées sur le DataFrame")
-        df_info = pd.DataFrame({
-            "Nom de la colonne": final_df.columns,
-            "Type de données": final_df.dtypes,
-            "Nombre de valeurs non nulles": final_df.count(),
-            "Pourcentage de valeurs non nulles": (final_df.count() / len(final_df)) * 100
-        })
-    
-        st.table(df_info)
 
     elif option == "Valeurs manquantes":
         final_df = load_csv('final_df.csv', header=0)
