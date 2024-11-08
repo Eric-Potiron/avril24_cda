@@ -698,7 +698,7 @@ elif page == pages[4]:
         buffer = io.StringIO()
         final_df.info(buf=buffer)
         s = buffer.getvalue()
-        st.write(s)
+        st.text(s)
 
     elif option == "Valeurs manquantes":
         final_df = load_csv('final_df.csv', header=0)
