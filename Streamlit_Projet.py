@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
+from StringIO import StringIO
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LinearRegression, Lasso, Ridge
 from sklearn.ensemble import RandomForestRegressor
