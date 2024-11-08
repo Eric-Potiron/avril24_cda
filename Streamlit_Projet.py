@@ -695,10 +695,15 @@ elif page == pages[4]:
 
     elif option == "Informations":
         final_df = load_csv('final_df.csv', header=0)
-        buffer = StringIO()
-        final_df.info(buf=buffer)
-        s = buffer.getvalue()
-        st.text(s)
+        st.write("### Informations détaillées sur le DataFrame")
+        df_info = pd.DataFrame({
+            "Nom de la colonne": final_df.columns,
+            "Type de données": final_df.dtypes,
+            "Nombre de valeurs non nulles": final_df.count(),
+            "Pourcentage de valeurs non nulles": (final_df.count() / len(final_df)) * 100
+        })
+    
+    st.table(df_info)
 
     elif option == "Valeurs manquantes":
         final_df = load_csv('final_df.csv', header=0)
