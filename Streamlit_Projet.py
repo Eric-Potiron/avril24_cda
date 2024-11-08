@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import io
+# import io
 import warnings
 import pickle
 
@@ -695,7 +695,7 @@ elif page == pages[4]:
 
     elif option == "Informations":
         final_df = load_csv('final_df.csv', header=0)
-        buffer = io.StringIO()
+        buffer = StringIO()
         final_df.info(buf=buffer)
         s = buffer.getvalue()
         st.text(s)
