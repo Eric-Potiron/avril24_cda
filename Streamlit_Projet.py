@@ -703,7 +703,7 @@ elif page == pages[4]:
             "Pourcentage de valeurs non nulles": (final_df.count() / len(final_df)) * 100
         })
     
-    st.table(df_info)
+        st.table(df_info)
 
     elif option == "Valeurs manquantes":
         final_df = load_csv('final_df.csv', header=0)
