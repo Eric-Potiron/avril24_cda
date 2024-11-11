@@ -1316,7 +1316,7 @@ elif page == pages[7]:
             <br><br>
             3- Le site <a href="https://www.cea.fr/presse/Pages/actualites-communiques/environnement/bilan-mondial-methane-record-emission.aspx#:~:text=%E2%80%8BLe%20bilan%20mondial%20de,des%20%C3%A9missions%20mondiales%20de%20m%C3%A9thane." style="color: blue;">statista</a> précise que les activités humaines ont émis un record de 400 millions de tonnes métriques de méthane en 2020.
             Or le méthane (CH4) à un PRG (potentiel de réchauffement global) 85 fois supérieur au CO² à 20 ans, qui diminue à 30 fois au bout de 100 ans selon la formule PRG(t) = 84.e^(-0.05776t), t désigne le temps.
-            Pour information, ce méthane provient de l'agriculture, l'élevage, la gestion des déchets, l'industrie énergétique (fuite lors d'extraction de pétrole et charbon) et la combustion de la biomasse.
+            Pour information, ce méthane provient de l'agriculture, l'élevage, la gestion des déchets, l'industrie énergétique (fuites lors d'extractions de pétrole et charbon) et la combustion de la biomasse.
             <br><br>
             La courbe ci-dessous donne un aperçu du stocks de méthane en équivalent CO² dans l'atmosphère en fonction du calcul de son PRG, pour une constante annuelle de 400 millions de tonnes métriques.
             On observe qu'au bout de 15 ans, il a été ajouté 350 gigatonnes d'équivalent CO².
