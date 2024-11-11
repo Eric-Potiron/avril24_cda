@@ -1319,7 +1319,7 @@ elif page == pages[7]:
             Pour information, ce méthane provient de l'agriculture, l'élevage, la gestion des déchets, l'industrie énergétique (fuites lors d'extractions de pétrole et charbon) et la combustion de la biomasse.
             <br><br>
             La courbe ci-dessous donne un aperçu du stocks de méthane en équivalent CO² dans l'atmosphère en fonction du calcul de son PRG, pour une constante annuelle de 400 millions de tonnes métriques.
-            On observe qu'au bout de 15 ans, il a été ajouté 350 gigatonnes d'équivalent CO².
+            On observe qu'au bout de 15 ans, ont été ajoutées 350 gigatonnes d'équivalent CO² dans l'atmosphère.
             <br><br>
         </div>
         """,
