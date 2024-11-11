@@ -718,7 +718,7 @@ elif page == pages[4]:
             Le graphique ci-après indique une absence de saisonnalité, et à partir des années 80 une corrélation multiple qui se dessine. Ainsi depuis 1900, la population et les émissions de CO² sont étroitement corrélées, et il semble que le PIB et les émissions de CO² amorcent une corrélation à compter des années 1980.
             </p>
         
-        Les variables étant indiquées fil du temps, c’est donc une série temporelle.
+        Les variables étant indiquées au fil du temps, c’est donc une série temporelle.
         """,
         unsafe_allow_html=True)
 
