@@ -636,7 +636,7 @@ elif page == pages[4]:
     correlation_matrix = final_df.corr()
     plt.figure(figsize=(6, 4))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
-    plt.title('Matrice de corrélation des variables (Fichier Modifié)')
+    plt.title('Matrice de corrélation des variables')
     plt.xticks(rotation=45, ha="right")
     st.pyplot(plt)
 
@@ -710,7 +710,6 @@ elif page == pages[4]:
 # PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Votre code Streamlit
 elif page == pages[5]:
 
     st.write("## Modélisations")
@@ -740,16 +739,15 @@ elif page == pages[5]:
     # Filtrer les données en fonction de l'année de départ
     data_filtre = data[data['Année'] >= annee_depart]
 
-    # Vérifier si des variables explicatives ont été choisies
     if variables_choisies:
         # Préparation des données
         X = data_filtre[variables_choisies]
         y = data_filtre['Var. Temp.']
-        
+
         # Division des données en ensembles d'entraînement et de test
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-        # Sélection du modèle de régression
+
+        # Initialisation du modèle
         if modele_selectionne == "Régression Linéaire":
             modele = LinearRegression()
         elif modele_selectionne == "Lasso":
@@ -757,23 +755,50 @@ elif page == pages[5]:
         elif modele_selectionne == "Ridge":
             modele = Ridge(alpha=1.0)
         elif modele_selectionne == "Régression Polynomiale":
-            # Pipeline pour la régression polynomiale
             modele = Pipeline([('poly', PolynomialFeatures(degree=2)), ('linear', LinearRegression())])
         elif modele_selectionne == "Forêt Aléatoire":
             modele = RandomForestRegressor(n_estimators=100, random_state=42)
+
+        # Ajout des commentaires en fonction des choix de l'utilisateur
+        if 'Population (m)' in variables_choisies:
+            st.write("L'inclusion de la population comme variable explicative permet d'analyser son impact direct sur la variation de température, ce qui est pertinent compte tenu des études sur la corrélation entre la croissance démographique et les émissions de gaz à effet de serre.")
         
+        if 'Total CO2 (mT)' in variables_choisies:
+            st.write("En intégrant les émissions totales de CO2, l'analyse met l'accent sur la relation entre la hausse des émissions et les changements de température, essentielle pour comprendre l'impact des activités humaines sur le climat.")
+
+        # Commentaires en fonction du modèle sélectionné
+        st.write(f"**Vous avez sélectionné le modèle {modele_selectionne} :**")
+        if modele_selectionne == "Régression Linéaire":
+            st.write("La régression linéaire est appropriée pour modéliser les relations linéaires et permet une interprétation facile grâce à ses coefficients.")
+        elif modele_selectionne == "Lasso":
+            st.write("Le modèle Lasso introduit une régularisation, ce qui est utile pour réduire les coefficients non significatifs et peut conduire à un modèle plus simple.")
+        elif modele_selectionne == "Ridge":
+            st.write("Le modèle Ridge applique une régularisation pour limiter la complexité des coefficients et ainsi réduire le risque de surapprentissage.")
+        elif modele_selectionne == "Régression Polynomiale":
+            st.write("La régression polynomiale permet de capturer des relations non linéaires plus complexes.")
+        elif modele_selectionne == "Forêt Aléatoire":
+            st.write("Le modèle de Forêt Aléatoire est un puissant algorithme non linéaire qui combine plusieurs arbres de décision pour améliorer la précision.")
+
+        # Commentaires en fonction de l'année de départ
+        if annee_depart < 1900:
+            st.write("L'utilisation d'une année de départ antérieure à 1900 peut intégrer des tendances historiques à long terme.")
+        elif 1950 <= annee_depart < 2000:
+            st.write("L'analyse à partir des années 1950 inclut l'ère moderne où l'industrialisation a entraîné des changements significatifs.")
+        elif annee_depart >= 2000:
+            st.write("En commençant l'analyse à partir des années 2000, l'étude se concentre sur les changements climatiques récents.")
+
         # Entraînement du modèle
         modele.fit(X_train, y_train)
-        
+
         # Prédictions et évaluation du modèle
         y_pred = modele.predict(X_test)
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
-        
+
         st.write(f"**Performance du modèle ({modele_selectionne}) :**")
         st.write(f"Mean Squared Error (MSE) : {mse:.2f}")
         st.write(f"R² Score : {r2:.2f}")
-        
+
         # Affichage des coefficients pour les modèles linéaires
         if modele_selectionne in ["Régression Linéaire", "Lasso", "Ridge"]:
             st.write("**Coefficients des variables explicatives :**")
@@ -846,10 +871,10 @@ elif page == pages[6]:
         # Préparation des données
         X = data_filtre[variables_choisies]
         y = data_filtre['Var. Temp.']
-        
+
         # Division des données en ensembles d'entraînement et de test
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
+
         # Sélection du modèle de régression
         if modele_selectionne == "Régression Linéaire":
             modele = LinearRegression()
@@ -858,41 +883,71 @@ elif page == pages[6]:
         elif modele_selectionne == "Ridge":
             modele = Ridge(alpha=1.0)
         elif modele_selectionne == "Régression Polynomiale":
-            # Pipeline pour la régression polynomiale
             modele = Pipeline([('poly', PolynomialFeatures(degree=2)), ('linear', LinearRegression())])
         elif modele_selectionne == "Forêt Aléatoire":
             modele = RandomForestRegressor(n_estimators=100, random_state=42)
-        
+
+        # Ajout des commentaires en fonction des choix de l'utilisateur
+        if 'Population (m)' in variables_choisies:
+            st.write("L'inclusion de la population comme variable explicative permet d'analyser son impact direct sur la variation de température, ce qui est pertinent compte tenu des études sur la corrélation entre la croissance démographique et les émissions de gaz à effet de serre.")
+
+        if 'Total CO2 (mT)' in variables_choisies:
+            st.write("En intégrant les émissions totales de CO2, l'analyse met l'accent sur la relation entre la hausse des émissions et les changements de température, essentielle pour comprendre l'impact des activités humaines sur le climat.")
+
+        if 'Année' in variables_choisies:
+            st.write("L'utilisation de l'année comme variable explicative permet de capturer des tendances temporelles, ce qui peut être important pour modéliser des évolutions chronologiques.")
+
+        # Commentaires en fonction du modèle sélectionné
+        st.write(f"**Vous avez sélectionné le modèle {modele_selectionne} :**")
+        if modele_selectionne == "Régression Linéaire":
+            st.write("La régression linéaire est appropriée pour modéliser les relations linéaires et permet une interprétation facile grâce à ses coefficients.")
+        elif modele_selectionne == "Lasso":
+            st.write("Le modèle Lasso introduit une régularisation, ce qui est utile pour réduire les coefficients non significatifs et peut conduire à un modèle plus simple.")
+        elif modele_selectionne == "Ridge":
+            st.write("Le modèle Ridge applique une régularisation pour limiter la complexité des coefficients et ainsi réduire le risque de surapprentissage.")
+        elif modele_selectionne == "Régression Polynomiale":
+            st.write("La régression polynomiale permet de capturer des relations non linéaires plus complexes.")
+        elif modele_selectionne == "Forêt Aléatoire":
+            st.write("Le modèle de Forêt Aléatoire est un puissant algorithme non linéaire qui combine plusieurs arbres de décision pour améliorer la précision.")
+
+        # Commentaires en fonction de l'année de départ
+        if annee_depart < 1900:
+            st.write("L'utilisation d'une année de départ antérieure à 1900 peut intégrer des tendances historiques à long terme.")
+        elif 1950 <= annee_depart < 2000:
+            st.write("L'analyse à partir des années 1950 inclut l'ère moderne où l'industrialisation a entraîné des changements significatifs.")
+        elif annee_depart >= 2000:
+            st.write("En commençant l'analyse à partir des années 2000, l'étude se concentre sur les changements climatiques récents.")
+
         # Entraînement du modèle
         modele.fit(X_train, y_train)
-        
+
         # Prédictions sur l'ensemble de test
         y_pred_test = modele.predict(X_test)
-        
+
         # Prédictions sur l'ensemble complet pour visualisation
         y_pred_all = modele.predict(X)
-        
+
         # Générer des années futures jusqu'en 2100
         annees_futures = pd.DataFrame({'Année': np.arange(annee_max + 1, 2101)})
-        
+
         # Simuler des valeurs futures pour les variables explicatives
         for var in variables_choisies:
             if var != 'Année':
                 coef_tendance = (data_filtre[var].iloc[-1] - data_filtre[var].iloc[0]) / (data_filtre['Année'].iloc[-1] - data_filtre['Année'].iloc[0])
                 annees_futures[var] = data_filtre[var].iloc[-1] + coef_tendance * (annees_futures['Année'] - data_filtre['Année'].iloc[-1])
-        
+
         # Prédictions sur les années futures
         y_pred_futures = modele.predict(annees_futures[variables_choisies])
         annees_futures['Prédictions'] = y_pred_futures
-        
+
         # Évaluation du modèle
         mse = mean_squared_error(y_test, y_pred_test)
         r2 = r2_score(y_test, y_pred_test)
-        
+
         st.write(f"**Performance du modèle ({modele_selectionne}) :**")
         st.write(f"Mean Squared Error (MSE) : {mse:.2f}")
         st.write(f"R² Score : {r2:.2f}")
-        
+
         # Affichage des coefficients pour les modèles linéaires
         if modele_selectionne in ["Régression Linéaire", "Lasso", "Ridge"]:
             st.write("**Coefficients des variables explicatives :**")
@@ -906,7 +961,7 @@ elif page == pages[6]:
         # Sauvegarder le modèle entraîné
         with open(BASE_DIR / 'modele_entraine.pkl', 'wb') as file:
             pickle.dump(modele, file)
-        
+
         # Affichage des prédictions par rapport aux années avec matplotlib
         data_filtre['Prédictions'] = y_pred_all
         plt.figure(figsize=(14, 7))
@@ -922,11 +977,8 @@ elif page == pages[6]:
         annees_affichees = np.arange(annee_depart, 2101, 5)
         plt.xticks(annees_affichees, rotation=45)
 
-        # Supprimer le séparateur des milliers
-        plt.gca().get_xaxis().get_major_formatter().set_useOffset(False)
-
         st.pyplot(plt)
-        
+
         # Courbes d'évolution de la population et du CO2
         if 'Population (m)' in variables_choisies:
             plt.figure(figsize=(14, 5))
@@ -949,6 +1001,7 @@ elif page == pages[6]:
             st.pyplot(plt)
     else:
         st.write("Veuillez choisir des variables explicatives pour entraîner le modèle.")
+
 
 
 # PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7 *** PAGE 7  *** PAGE 7
