@@ -19,18 +19,20 @@ from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.pipeline import Pipeline
+from pathlib import Path
 
-# Fonction pour charger un fichier CSV
-def load_csv(file_path, **kwargs):
-    return pd.read_csv(file_path, **kwargs)
+# Définir le répertoire de base (répertoire du script courant)
+BASE_DIR = Path(__file__).resolve().parent
+
+# Charger les fichiers CSV
+def load_csv(filename, sep=',', encoding='utf-8', header=0):
+    return pd.read_csv(BASE_DIR / filename, sep=sep, encoding=encoding, header=header)
 
 st.sidebar.title("Sommaire")
 
 pages = ["Projet", "Jeux de données sources", "Pertinence des données", "Préparation des données",
          "Dataset final & DataVizualization", "Modélisation", "Prédictions", "Limites", "Conclusions"]
 
-# PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0
-# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 page = st.sidebar.radio("", pages)
 
@@ -39,8 +41,6 @@ st.sidebar.write("---")  # Ligne de séparation facultative
 st.sidebar.write("Cohorte avril 2024 / DA")
 st.sidebar.write("Sujet : Températures Terrestres")
 st.sidebar.write("Eric Potiron")
-
-# PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0
 
 # Ajout du CSS pour la justification
 st.markdown(
@@ -54,6 +54,9 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0 *** PAGE 0  *** PAGE 0
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if page == pages[0]:
     st.write("### <u>Contexte</u>", unsafe_allow_html=True)
@@ -98,239 +101,108 @@ if page == pages[0]:
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif page == pages[1]:
-    
-
     st.write("### Jeux de données sources")
 
-    if st.checkbox("### 📁 **Zonal annual means.csv**"):
-       df1 = load_csv('Zonal annual means.csv', header=0)
-       rows_df1, cols_df1 = df1.shape # Lignes et colonnes
-       num_duplicates_df1 = df1.duplicated().sum() # Doublons
-       manquantes_df1 = df1.isna().sum().to_frame().T # Valeurs manquantes
-       info_df1 = pd.DataFrame({'Column': df1.columns, 'Non-Null Count': [df1[col].notnull().sum() for col in df1.columns], 'Dtype': [df1[col].dtype for col in df1.columns] })
-       info_df1 = info_df1.T  # Transpose le DataFrame pour un affichage horizontal
-       info_df1.columns = info_df1.iloc[0]  # Définit les noms de colonnes
-       info_df1 = info_df1[1:]  # Supprime la première ligne redondante
+    # Chemin relatif pour chaque fichier CSV
+    csv_files = {
+        "Zonal annual means.csv": BASE_DIR / 'Zonal annual means.csv',
+        "Southern Hemisphere-mean monthly, seasonal, and annual means.csv": BASE_DIR / 'Southern Hemisphere-mean monthly, seasonal, and annual means.csv',
+        "Northern Hemisphere-mean monthly, seasonal, and annual means.csv": BASE_DIR / 'Northern Hemisphere-mean monthly, seasonal, and annual means.csv',
+        "Global-mean monthly, seasonal, and annual means.csv": BASE_DIR / 'Global-mean monthly, seasonal, and annual means.csv',
+        "global-gdp-over-the-long-run.csv": BASE_DIR / 'global-gdp-over-the-long-run.csv',
+        "owid-co2-data.csv": BASE_DIR / 'owid-co2-data.csv'
+    }
 
-       st.write(f"Source : NASA")
-       st.write(f"Accès libre : (https://data.giss.nasa.gov/gistemp/)")
-       st.markdown(
-        """
-        <p class="justified-text">
-        Le fichier contient des données annuelles moyennes de variations de température pour différentes régions du globe, de 1880 à une date récente.
-        <br>
-        <br>
-        La NASA se source via différents moyens :
-        <br>
-        <strong><u>Stations météorologiques de surface</strong></u> : principalement de milliers de stations météorologiques réparties dans le monde entier. Ces stations mesurent les températures à des intervalles réguliers, généralement toutes les heures ou toutes les trois heures.
-        <br>
-        <strong><u>Bouées océaniques</strong></u> : les bouées flottantes dans les océans collectent des données sur la température de surface de la mer. Elles complètent les mesures terrestres en couvrant les vastes zones océaniques.
-        <br>
-     	<strong><u>Navires et plates-formes pétrolières</strong></u>.
-        <br>
-     	<strong><u>Satellites</strong></u> : ils fournissent des mesures de la température de la surface terrestre et des océans. Ils offrent une couverture globale et sont particulièrement utiles pour les régions éloignées et océaniques.
-        </p>
-        """,
-        unsafe_allow_html=True
-        )
-       st.write(f"**Le dataframe contient** {rows_df1} lignes et {cols_df1} colonnes.")
-       st.write(f"Le nombre de **doublons** est de : {num_duplicates_df1}")
-       st.write(f"**Valeurs manquantes**:")
-       st.dataframe(manquantes_df1)
-       st.write(f"**Informations** :")
-       st.dataframe(info_df1)
-       st.write(f"**En tête :**")  
-       st.write(df1.head())
+    # Exemple d'affichage dynamique pour chaque fichier CSV
+    for csv_name, csv_path in csv_files.items():
+        if st.checkbox(f"### 📁 **{csv_name}**"):
+            # Définir le header en fonction du fichier (ici, certains fichiers ont un header différent)
+            header = 0 if 'gdp' in csv_name or 'co2' in csv_name else 1
+            df = load_csv(csv_path, header=header)
 
-    if st.checkbox("### 📁 **Southern Hemisphere-mean monthly, seasonal, and annual means.csv**"):
-       df5 = load_csv('Southern Hemisphere-mean monthly, seasonal, and annual means.csv', header=1)
-       rows_df5, cols_df5 = df5.shape # Lignes et colonnes
-       num_duplicates_df5 = df5.duplicated().sum() # Doublons
-       manquantes_df5 = df5.isna().sum().to_frame().T # Valeurs manquantes
-       info_df5 = pd.DataFrame({'Column': df5.columns, 'Non-Null Count': [df5[col].notnull().sum() for col in df5.columns], 'Dtype': [df5[col].dtype for col in df5.columns] })
-       info_df5 = info_df5.T  # Transpose le DataFrame pour un affichage horizontal
-       info_df5.columns = info_df5.iloc[0]  # Définit les noms de colonnes
-       info_df5 = info_df5[1:]  # Supprime la première ligne redondante
+            # Calcul des informations
+            rows, cols = df.shape  # Lignes et colonnes
+            num_duplicates = df.duplicated().sum()  # Doublons
+            manquantes = df.isna().sum().to_frame().T  # Valeurs manquantes
+            info = pd.DataFrame({
+                'Column': df.columns,
+                'Non-Null Count': [df[col].notnull().sum() for col in df.columns],
+                'Dtype': [df[col].dtype for col in df.columns]
+            })
+            info = info.T  # Transpose le DataFrame pour un affichage horizontal
+            info.columns = info.iloc[0]  # Définit les noms de colonnes
+            info = info[1:]  # Supprime la première ligne redondante
 
-       st.write(f"Source : NASA")
-       st.write(f"Accès libre : (https://data.giss.nasa.gov/gistemp/)")
-       st.markdown(
-        """
-        <p class="justified-text">
-        Le fichier contient des données de variations de température moyennes pour l'hémisphère nord, avec des valeurs mensuelles, saisonnières et annuelles.
-        <br>
-        <br>
-        La NASA se source via différents moyens :
-        <br>
-        <strong><u>Stations météorologiques de surface</strong></u> : principalement de milliers de stations météorologiques réparties dans le monde entier. Ces stations mesurent les températures à des intervalles réguliers, généralement toutes les heures ou toutes les trois heures.
-        <br>
-        <strong><u>Bouées océaniques</strong></u> : les bouées flottantes dans les océans collectent des données sur la température de surface de la mer. Elles complètent les mesures terrestres en couvrant les vastes zones océaniques.
-        <br>
-     	<strong><u>Navires et plates-formes pétrolières</strong></u>.
-        <br>
-     	<strong><u>Satellites</strong></u> : ils fournissent des mesures de la température de la surface terrestre et des océans. Ils offrent une couverture globale et sont particulièrement utiles pour les régions éloignées et océaniques.
-        </p>
-        """,
-        unsafe_allow_html=True
-        )
-       st.write(f"**Le dataframe contient** {rows_df5} lignes et {cols_df5} colonnes.")
-       st.write(f"Le nombre de **doublons** est de : {num_duplicates_df5}")
-       st.write(f"**Valeurs manquantes** :")
-       st.dataframe(manquantes_df5)
-       st.write(f"**Informations** :")
-       st.dataframe(info_df5)
-       st.write(f"**En tête** :")  
-       st.write(df5.head())
+            # Affichage des données dans Streamlit
+            st.write(f"**Le dataframe contient** {rows} lignes et {cols} colonnes.")
+            st.write(f"Le nombre de **doublons** est de : {num_duplicates}")
+            st.write(f"**Valeurs manquantes :**")
+            st.dataframe(manquantes)
+            st.write(f"**Informations :**")
+            st.dataframe(info)
+            st.write(f"**En tête :**")  
+            st.write(df.head())
 
-    if st.checkbox("### 📁 **Northern Hemisphere-mean monthly, seasonal, and annual means.csv**"):
-       df8 = load_csv('Northern Hemisphere-mean monthly, seasonal, and annual means.csv', header=1)
-       rows_df8, cols_df8 = df8.shape # Lignes et colonnes
-       num_duplicates_df8 = df8.duplicated().sum() # Doublons
-       manquantes_df8 = df8.isna().sum().to_frame().T # Valeurs manquantes
-       info_df8 = pd.DataFrame({'Column': df8.columns, 'Non-Null Count': [df8[col].notnull().sum() for col in df8.columns], 'Dtype': [df8[col].dtype for col in df8.columns] })
-       info_df8 = info_df8.T  # Transpose le DataFrame pour un affichage horizontal
-       info_df8.columns = info_df8.iloc[0]  # Définit les noms de colonnes
-       info_df8 = info_df8[1:]  # Supprime la première ligne redondante
-
-       st.write(f"Source : NASA")
-       st.write(f"Accès libre : (https://data.giss.nasa.gov/gistemp/)")
-       st.markdown(
-        """
-        <p class="justified-text">
-        Le fichier contient des données de variations de température moyennes pour l'hémisphère sud, avec des valeurs mensuelles, saisonnières et annuelles.
-        <br>
-        <br>
-        La NASA se source via différents moyens :
-        <br>
-        <strong><u>Stations météorologiques de surface</strong></u> : principalement de milliers de stations météorologiques réparties dans le monde entier. Ces stations mesurent les températures à des intervalles réguliers, généralement toutes les heures ou toutes les trois heures.
-        <br>
-        <strong><u>Bouées océaniques</strong></u> : les bouées flottantes dans les océans collectent des données sur la température de surface de la mer. Elles complètent les mesures terrestres en couvrant les vastes zones océaniques.
-        <br>
-     	<strong><u>Navires et plates-formes pétrolières</strong></u>.
-        <br>
-     	<strong><u>Satellites</strong></u> : ils fournissent des mesures de la température de la surface terrestre et des océans. Ils offrent une couverture globale et sont particulièrement utiles pour les régions éloignées et océaniques.
-        </p>
-        """,
-        unsafe_allow_html=True
-        )
-       st.write(f"**Le dataframe contient** {rows_df8} lignes et {cols_df8} colonnes.")
-       st.write(f"Le nombre de **doublons** est de : {num_duplicates_df8}")
-       st.write(f"**Valeurs manquantes** :")
-       st.dataframe(manquantes_df8)
-       st.write(f"**Informations** :")
-       st.dataframe(info_df8)
-       st.write(f"**En tête**:")  
-       st.write(df8.head())
-
-    if st.checkbox("### 📁 **Global-mean monthly, seasonal, and annual means.csv**"):
-       df7 = load_csv('Global-mean monthly, seasonal, and annual means.csv', header=1)
-       rows_df7, cols_df7 = df7.shape # Lignes et colonnes
-       num_duplicates_df7 = df7.duplicated().sum() # Doublons
-       manquantes_df7 = df7.isna().sum().to_frame().T # Valeurs manquantes
-       info_df7 = pd.DataFrame({'Column': df7.columns, 'Non-Null Count': [df7[col].notnull().sum() for col in df7.columns], 'Dtype': [df7[col].dtype for col in df7.columns] })
-       info_df7 = info_df7.T  # Transpose le DataFrame pour un affichage horizontal
-       info_df7.columns = info_df7.iloc[0]  # Définit les noms de colonnes
-       info_df7 = info_df7[1:]  # Supprime la première ligne redondante
-
-       st.write(f"Source : NASA")
-       st.write(f"Accès libre : (https://data.giss.nasa.gov/gistemp/)")
-       st.markdown(
-        """
-        <p class="justified-text">
-        Le fichier contient des données de variations de températures moyennes globales (terres et océans combinés) avec des moyennes mensuelles, saisonnières et annuelles.
-        <br>
-        <br>
-        La NASA se source via différents moyens :
-        <br>
-        <strong><u>Stations météorologiques de surface</strong></u> : principalement de milliers de stations météorologiques réparties dans le monde entier. Ces stations mesurent les températures à des intervalles réguliers, généralement toutes les heures ou toutes les trois heures.
-        <br>
-        <strong><u>Bouées océaniques</strong></u> : les bouées flottantes dans les océans collectent des données sur la température de surface de la mer. Elles complètent les mesures terrestres en couvrant les vastes zones océaniques.
-        <br>
-     	<strong><u>Navires et plates-formes pétrolières</strong></u>.
-        <br>
-     	<strong><u>Satellites</strong></u> : ils fournissent des mesures de la température de la surface terrestre et des océans. Ils offrent une couverture globale et sont particulièrement utiles pour les régions éloignées et océaniques.
-        </p>
-        """,
-        unsafe_allow_html=True
-        )
-       st.write(f"**Le dataframe contient** {rows_df7} lignes et {cols_df7} colonnes.")
-       st.write(f"Le nombre de **doublons** est de : {num_duplicates_df7}")
-       st.write(f"**Valeurs manquantes** :")
-       st.dataframe(manquantes_df7)
-       st.write(f"**Informations** :")
-       st.dataframe(info_df7)
-       st.write(f"**En tête** :")  
-       st.write(df7.head())
-
-    if st.checkbox("### 📁 **global-gdp-over-the-long-run.csv**"):
-       df_pib = load_csv('global-gdp-over-the-long-run.csv', header=0)
-       rows_df_pib, cols_df_pib = df_pib.shape # Lignes et colonnes
-       num_duplicates_df_pib = df_pib.duplicated().sum() # Doublons
-       manquantes_df_pib = df_pib.isna().sum().to_frame().T # Valeurs manquantes
-       info_df_pib = pd.DataFrame({'Column': df_pib.columns, 'Non-Null Count': [df_pib[col].notnull().sum() for col in df_pib.columns], 'Dtype': [df_pib[col].dtype for col in df_pib.columns] })
-       info_df_pib = info_df_pib.T  # Transpose le DataFrame pour un affichage horizontal
-       info_df_pib.columns = info_df_pib.iloc[0]  # Définit les noms de colonnes
-       info_df_pib = info_df_pib[1:]  # Supprime la première ligne redondante
-
-       st.write(f"Source : OCDE")
-       st.write(f"Accès libre : (https://ourworldindata.org/)")
-       st.markdown(
-        """
-        <p class="justified-text">
-        Ce fichier donne une vision de l’évolution du PIB mondial depuis l’an 1 jusqu’à 2022. Ces estimations historiques du PIB sont ajustées en fonction de l'inflation. Trois sources sont combinées pour créer cette série chronologique : la base de données Maddison (avant 1820), la base de données du projet Maddison (1820-1989) et la Banque mondiale (à partir de 1890). Le terme $ US constants désigne un $ US ayant un pouvoir d’achat constant dans le temps, et donc corrigé de l’impact de la variation des prix.
-        </p>
-        """,
-        unsafe_allow_html=True
-        )
-       st.write(f"**Le dataframe contient** {rows_df_pib} lignes et {cols_df_pib} colonnes.")
-       st.write(f"Le nombre de **doublons** est de : {num_duplicates_df_pib}")
-       st.write(f"**Valeurs manquantes :**")
-       st.dataframe(manquantes_df_pib)
-       st.write(f"**Informations :**")
-       st.dataframe(info_df_pib)
-       st.write(f"**En tête :**")  
-       st.write(df_pib.head())
-
-    if st.checkbox("### 📁 **owid-co2-data.csv**"):
-       df4 = load_csv('owid-co2-data.csv', header=0)
-       rows_df4, cols_df4 = df4.shape # Lignes et colonnes
-       num_duplicates_df4 = df4.duplicated().sum() # Doublons
-       manquantes_df4 = df4.isna().sum().to_frame().T # Valeurs manquantes
-       info_df4 = pd.DataFrame({'Column': df4.columns, 'Non-Null Count': [df4[col].notnull().sum() for col in df4.columns], 'Dtype': [df4[col].dtype for col in df4.columns] })
-       info_df4 = info_df4.T  # Transpose le DataFrame pour un affichage horizontal
-       info_df4.columns = info_df4.iloc[0]  # Définit les noms de colonnes
-       info_df4 = info_df4[1:]  # Supprime la première ligne redondante
-
-       st.write(f"Source : OWID")
-       st.write(f"Accès libre : (https://github.com/owid/co2-data)")
-       st.markdown(
-        """
-        <p class="justified-text">
-        Le fichier contient des données sur les émissions de CO₂ et d'autres gaz à effet de serre par pays, couvrant plusieurs indicateurs environnementaux et économiques.
-        Ce fichier est particulièrement utile pour analyser les tendances globales et sectorielles des émissions de CO₂, l'impact des différents secteurs d'activité, et la contribution des gaz à effet de serre au changement climatique. Il permet également de comparer l'intensité des émissions entre pays et au fil du temps, en tenant compte de la population et du PIB. 
-        <br>
-        <br>
-        <strong><u>Global Carbon Project (GCP)</strong></u> : fournit des estimations des émissions mondiales de CO₂ basées sur les inventaires nationaux, les émissions de combustion fossile, et les changements d'utilisation des terres.
-        <br>
-        <strong><u>Agence Internationale de l'Énergie (AIE)</strong></u> : offre des données sur les émissions de CO₂ issues de la combustion d'énergie.
-        <br>
-     	<strong><u>Carbon Dioxide Information Analysis Center (CDIAC)</strong></u> : a une longue histoire de collecte et de publication de données sur les émissions de CO₂.
-        <br>
-     	<strong><u>Emissions Database for Global Atmospheric Research (EDGAR)</strong></u> : propose des données détaillées sur les émissions de gaz à effet de serre et de polluants atmosphériques.
-        <br>
-     	<strong><u>Données gouvernementales</strong></u> : inventaires Nationaux. Les pays rapportent leurs émissions de gaz à effet de serre dans le cadre des engagements pris sous la Convention-cadre des Nations Unies sur les changements climatiques (CCNUCC).
-        </p>
-        """,
-        unsafe_allow_html=True
-        )
-       st.write(f"**Le dataframe contient** {rows_df4} lignes et {cols_df4} colonnes.")
-       st.write(f"Le nombre de **doublons** est de : {num_duplicates_df4}")
-       st.write(f"**Valeurs manquantes :**")
-       st.dataframe(manquantes_df4)
-       st.write(f"**Informations :**")
-       st.dataframe(info_df4)
-       st.write(f"**En tête :**")  
-       st.write(df4.head())
+            # Ajouter des descriptions spécifiques pour certains fichiers
+            if 'Zonal' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : (https://data.giss.nasa.gov/gistemp/)")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Le fichier contient des données annuelles moyennes de variations de température pour différentes régions du globe, de 1880 à une date récente.
+                    <br><br>
+                    La NASA se source via différents moyens :
+                    <br><strong><u>Stations météorologiques de surface</strong></u>, <strong><u>Bouées océaniques</strong></u>,
+                    <strong><u>Navires et plates-formes pétrolières</strong></u>, et <strong><u>Satellites</strong></u>.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            elif 'Southern Hemisphere' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : (https://data.giss.nasa.gov/gistemp/)")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Le fichier contient des données de variations de température moyennes pour l'hémisphère sud, avec des valeurs mensuelles, saisonnières et annuelles.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            elif 'Northern Hemisphere' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : (https://data.giss.nasa.gov/gistemp/)")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Le fichier contient des données de variations de température moyennes pour l'hémisphère nord, avec des valeurs mensuelles, saisonnières et annuelles.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            elif 'gdp' in csv_name:
+                st.write("Source : OCDE")
+                st.write("Accès libre : (https://ourworldindata.org/)")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Ce fichier donne une vision de l’évolution du PIB mondial depuis l’an 1 jusqu’à 2022. Ces estimations historiques du PIB sont ajustées en fonction de l'inflation.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            elif 'co2' in csv_name:
+                st.write("Source : OWID")
+                st.write("Accès libre : (https://github.com/owid/co2-data)")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Le fichier contient des données sur les émissions de CO₂ et d'autres gaz à effet de serre par pays, couvrant plusieurs indicateurs environnementaux et économiques.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
 
 
 # PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2
@@ -347,17 +219,23 @@ elif page == pages[2]:
     with col2:
         hide_all = st.button("Tout masquer")
 
-    # Si "Tout afficher" est cliqué, toutes les sections sont visibles
-    # Si "Tout masquer" est cliqué, toutes les sections sont masquées
+    # Gestion de l'affichage global des sections
     if show_all:
         display_sections = True
     elif hide_all:
         display_sections = False
     else:
-        display_sections = None  # Aucun bouton n'est cliqué, on laisse les checkboxes individuelles contrôler l'affichage
+        display_sections = None
 
-    if show_all or st.checkbox("Variations mondiales des températures globales par année") :
-        df1 = pd.read_csv('Zonal annual means.csv', header=0)
+    # Chemins relatifs pour les fichiers CSV
+    csv_paths = {
+        "Zonal annual means": BASE_DIR / 'Zonal annual means.csv',
+        "Global GDP": BASE_DIR / 'global-gdp-over-the-long-run.csv',
+        "OWID CO2 data": BASE_DIR / 'owid-co2-data.csv'
+    }
+
+    if show_all or st.checkbox("Variations mondiales des températures globales par année"):
+        df1 = pd.read_csv(csv_paths["Zonal annual means"], header=0)
         plt.figure(figsize=(8, 4))
         plt.plot(df1['Year'], df1['Glob'], marker='.', linestyle='-', color='blue')
         plt.title('Variations mondiales des températures globales par année')
@@ -372,11 +250,11 @@ elif page == pages[2]:
         <br>
         On peut d’ores et déjà constater une augmentation significative à partir de 1960.
         </p>
-        """,
+        """, 
         unsafe_allow_html=True)
 
-    if show_all or st.checkbox("Variations mondiales des températures pour les hémisphères Nord et Sud") :
-        df1 = pd.read_csv('Zonal annual means.csv', header=0)
+    if show_all or st.checkbox("Variations mondiales des températures pour les hémisphères Nord et Sud"):
+        df1 = pd.read_csv(csv_paths["Zonal annual means"], header=0)
         plt.figure(figsize=(8, 4))
         plt.plot(df1['Year'], df1['NHem'], marker='.', linestyle='-', color='green', label='Hémisphère Nord')
         plt.plot(df1['Year'], df1['SHem'], marker='.', linestyle='-', color='orange', label='Hémisphère Sud')
@@ -393,19 +271,18 @@ elif page == pages[2]:
         <br>
         Ces résultats renforcent l'hypothèse d'un réchauffement climatique global, bien que les impacts spécifiques puissent varier légèrement entre les hémisphères.
         </p>
-        """,
+        """, 
         unsafe_allow_html=True)
 
     if show_all or st.checkbox("Évolution du PIB mondial à partir de 1850"):
-        df_pib = pd.read_csv('global-gdp-over-the-long-run.csv', header=0)
+        df_pib = pd.read_csv(csv_paths["Global GDP"], header=0)
         df_pib_1850 = df_pib[df_pib['Year'] >= 1850]
-        df_pib_1850['GDP'] = df_pib_1850['GDP'].astype('float64')
-        df_pib_1850['GDP'] = df_pib_1850['GDP'] / 1000000000
+        df_pib_1850['GDP'] = df_pib_1850['GDP'].astype('float64') / 1e9
         plt.figure(figsize=(8, 4))
         plt.plot(df_pib_1850['Year'], df_pib_1850['GDP'], marker='.', linestyle='-', color='purple')
         plt.title('Évolution du PIB mondial à partir de 1850 en milliards de dollars')
         plt.xlabel('Année')
-        plt.ylabel('PIB mondial (en dollars)')
+        plt.ylabel('PIB mondial (en milliards de dollars)')
         plt.grid(True)
         st.pyplot(plt)
         st.markdown(
@@ -413,15 +290,15 @@ elif page == pages[2]:
         <p class="justified-text">
         La tendance générale est donc celle d'une augmentation continue du PIB mondial, traduisant une expansion économique globale, malgré certaines périodes d'instabilité. Cela reflète une augmentation significative de la production, de la technologie et des capacités économiques à l’échelle mondiale.
         </p>
-        """,
+        """, 
         unsafe_allow_html=True)
 
     if show_all or st.checkbox("Total des émissions de CO² mondiales"):
-        df4 = pd.read_csv('owid-co2-data.csv', header=0, sep=",")
+        df4 = pd.read_csv(csv_paths["OWID CO2 data"], header=0)
         df4_world = df4[df4['country'] == 'World']
         plt.figure(figsize=(8, 4))
         plt.plot(df4_world['year'], df4_world['co2_including_luc'], marker='.', linestyle='-', color='brown')
-        plt.title('Émissions mondiales de CO² (y compris l\'utilisation des terres)')
+        plt.title("Émissions mondiales de CO² (y compris l'utilisation des terres)")
         plt.xlabel('Année')
         plt.ylabel('Émissions de CO2 (Gt)')
         plt.grid(True)
@@ -439,7 +316,7 @@ elif page == pages[2]:
         <br>
         Ces résultats mettent en évidence la contribution humaine croissante aux émissions de CO₂ et soulignent l'importance de stratégies d'atténuation pour gérer et réduire ces émissions à l'échelle mondiale.
         </p>
-        """,
+        """, 
         unsafe_allow_html=True)
 
     if show_all or st.checkbox("Émissions mondiales de CO² par source (à partir de 1900)"):
@@ -468,41 +345,43 @@ elif page == pages[2]:
         plt.legend(loc='best')
         plt.grid(True)
         st.pyplot(plt)
-        st.markdown("""
+        st.markdown(
+        """
         <p class="justified-text">
         Cette analyse souligne les changements majeurs dans les sources d'émission au 20ème siècle, avec un passage progressif du charbon vers le pétrole et le gaz naturel, tout en mettant en lumière la diversification des sources industrielles de CO₂. La prise en compte de ces divers facteurs est essentielle pour une stratégie de réduction des émissions efficace.
         </p>
-        """, unsafe_allow_html=True)
+        """, 
+        unsafe_allow_html=True)
 
     if show_all or st.checkbox("Évolution de la population mondiale par année"):
         df4_pop = df4[df4['country'] == 'World']
-        df4_pop['population'] = df4_pop['population'] / 1000000000
+        df4_pop['population'] = df4_pop['population'] / 1e9
         plt.figure(figsize=(8, 4))
         plt.plot(df4_pop['year'], df4_pop['population'], marker='.', linestyle='-', color='blue')
         plt.title('Évolution de la population mondiale par année')
         plt.xlabel('Année')
-        plt.ylabel('Population mondiale (en miliards)')
+        plt.ylabel('Population mondiale (en milliards)')
         plt.grid(True)
         st.pyplot(plt)
         st.markdown(
-            """
-            <p class="justified-text">
-            Le graphique montre une augmentation rapide de la population mondiale à partir du 20ème siècle :
-            </p>
-            <div style="margin-left: 30px;">
-                <p class="justified-text">Stabilité relative avant le 19ème siècle : La population mondiale était relativement stable jusqu'à la fin du 19ème siècle, avec une légère croissance régulière.</p>
-                <p class="justified-text">Croissance rapide au 20ème siècle : Une augmentation significative se produit au cours du 20ème siècle, avec des taux de croissance plus élevés après la Seconde Guerre mondiale. Cette période marque l'amélioration des soins de santé, une diminution de la mortalité infantile et une augmentation de la longévité.</p>
-                <p class="justified-text">Tendance vers la surpopulation : La courbe indique une tendance vers une population mondiale qui dépasse les 8 milliards au 21ème siècle, mettant en évidence les défis liés à la gestion des ressources, du climat et des infrastructures pour soutenir la croissance.</p>
-            </div>
-            <p class="justified-text">
-            Cette tendance à la croissance rapide montre l’impact humain croissant sur la planète et souligne l’importance des stratégies de développement durable pour répondre aux défis démographiques.
-            </p>
-            """,
-            unsafe_allow_html=True)
+        """
+        <p class="justified-text">
+        Le graphique montre une augmentation rapide de la population mondiale à partir du 20ème siècle :
+        </p>
+        <div style="margin-left: 30px;">
+            <p class="justified-text">Stabilité relative avant le 19ème siècle : La population mondiale était relativement stable jusqu'à la fin du 19ème siècle, avec une légère croissance régulière.</p>
+            <p class="justified-text">Croissance rapide au 20ème siècle : Une augmentation significative se produit au cours du 20ème siècle, avec des taux de croissance plus élevés après la Seconde Guerre mondiale. Cette période marque l'amélioration des soins de santé, une diminution de la mortalité infantile et une augmentation de la longévité.</p>
+            <p class="justified-text">Tendance vers la surpopulation : La courbe indique une tendance vers une population mondiale qui dépasse les 8 milliards au 21ème siècle, mettant en évidence les défis liés à la gestion des ressources, du climat et des infrastructures pour soutenir la croissance.</p>
+        </div>
+        <p class="justified-text">
+        Cette tendance à la croissance rapide montre l’impact humain croissant sur la planète et souligne l’importance des stratégies de développement durable pour répondre aux défis démographiques.
+        </p>
+        """, 
+        unsafe_allow_html=True)
 
     if show_all or st.checkbox("Corrélation entre population et émission de CO²"):
         world_data2 = df4[df4['country'] == 'World']
-        world_data2['population'] = world_data2['population'] / 1000000000
+        world_data2['population'] = world_data2['population'] / 1e9
         fig, ax1 = plt.subplots(figsize=(8, 4))
         ax1.plot(world_data2['year'], world_data2['population'], marker='.', linestyle='-', color='blue', label='Population')
         ax1.set_xlabel('Année')
@@ -515,7 +394,7 @@ elif page == pages[2]:
         plt.title('Évolution de la population mondiale & des émissions de CO² (y compris LUC)')
         ax1.grid(True)
         fig.tight_layout()
-        fig.legend(loc='upper left', bbox_to_anchor=(0.1,0.9), bbox_transform=ax1.transAxes)
+        fig.legend(loc='upper left', bbox_to_anchor=(0.1, 0.9), bbox_transform=ax1.transAxes)
         plt.grid(True)
         st.pyplot(plt)
         st.markdown(
@@ -527,10 +406,11 @@ elif page == pages[2]:
         <br>
         Après 1950, il y a une accélération marquée de la croissance de la population, accompagnée d'une augmentation rapide des émissions de CO₂. Cela correspond à la période de forte industrialisation mondiale et d'expansion des énergies fossiles.
         <br>
-        Cette analyse met en évidence la relation étroite entre la croissance démographique et les émissions de CO₂. Les défis environnementaux liés aux émissions de gaz à effet de serre ne peuvent être séparés des dynamiques démographiques
+        Cette analyse met en évidence la relation étroite entre la croissance démographique et les émissions de CO₂. Les défis environnementaux liés aux émissions de gaz à effet de serre ne peuvent être séparés des dynamiques démographiques.
         </p>
-        """,
+        """, 
         unsafe_allow_html=True)
+
 
 # PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3 *** PAGE 3  *** PAGE 3
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -539,7 +419,6 @@ elif page == pages[3]:
 
     st.write("## Préparation des données")
 
-    
     st.markdown(
         """
         <div style="text-align: justify;">
@@ -576,7 +455,7 @@ elif page == pages[3]:
                     📁 Zone monde pour les émissions de CO²
                     <br>
                     <span style="margin-left:20px; display: inline-block;">
-                        ✔ On ne conserve que les colonnes year, population et co2_including_luc renommées respectivements Année, Population (m) etTotal CO² (GT).
+                        ✔ On ne conserve que les colonnes year, population et co2_including_luc renommées respectivements Année, Population (m) et Total CO² (GT).
                         <br>
                         ✔ On ne garde que les années > 1880.
                         <br>
@@ -594,9 +473,14 @@ elif page == pages[3]:
         unsafe_allow_html=True
     )
 
-    # Chargement des fichiers CSV
-    df_co2 = load_csv('owid-co2-data.csv', header=0)
-    df_zonal = load_csv('Zonal annual means.csv', header=0)
+    # Chargement des fichiers CSV avec chemins relatifs
+    csv_paths = {
+        "owid_co2": BASE_DIR / 'owid-co2-data.csv',
+        "zonal_annual_means": BASE_DIR / 'Zonal annual means.csv'
+    }
+    
+    df_co2 = load_csv(csv_paths["owid_co2"], header=0)
+    df_zonal = load_csv(csv_paths["zonal_annual_means"], header=0)
 
     # Filtrer pour ne garder que les données où 'country' est "World"
     df_co2 = df_co2[df_co2['country'] == 'World']
@@ -628,7 +512,6 @@ elif page == pages[3]:
     plt.figure(figsize=(12, 6))
     plt.plot(df_merged['Year'], df_merged['temperature_change_from_co2'], label='owid-co2-data.csv')
     plt.plot(df_merged['Year'], df_merged['Glob'], label='Zonal annual means.csv')
-    
 
     # Ajouter les labels et le titre
     plt.xlabel('Année')
@@ -638,13 +521,15 @@ elif page == pages[3]:
 
     # Afficher le graphique
     st.pyplot(plt)
+
    
 # PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4 *** PAGE 4  *** PAGE 4
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif page == pages[4]:
 
-# Lire le fichier
+    # Lire le fichier CSV avec chemin relatif
+    csv_path = BASE_DIR / 'final_df.csv'
 
     st.write("## Dataset final & DataVizualization")
     st.markdown(
@@ -652,17 +537,20 @@ elif page == pages[4]:
         Après fusion sur l'année des 3 fichiers cités précédemment et ajout des données pour l'année 2023, le fichier de travail se présente comme suit :
         """,
         unsafe_allow_html=True)
+
     # Crée des boutons radio pour sélectionner l'option d'affichage
     option = st.selectbox(
         "",
         ("Aucune sélection", "En-tête du data", "Fin du data", "Informations", "Valeurs manquantes", "Doublons")
     )
+
+    # Charger le DataFrame pour chaque option sélectionnée
+    final_df = load_csv(csv_path, header=0)
+
     if option == "Aucune sélection":
         st.write(f"")
-    
-    # Affiche le contenu en fonction de l'option sélectionnée
+
     elif option == "En-tête du data":
-        final_df = load_csv('final_df.csv', header=0)
         styled_df = final_df.head().style.format({
             final_df.columns[0]: "{:.0f}",
             final_df.columns[1]: "{:.2f}",
@@ -675,7 +563,6 @@ elif page == pages[4]:
         st.dataframe(styled_df)
 
     elif option == "Fin du data":
-        final_df = load_csv('final_df.csv', header=0)
         styled_df = final_df.tail().style.format({
             final_df.columns[0]: "{:.0f}",
             final_df.columns[1]: "{:.2f}",
@@ -688,26 +575,21 @@ elif page == pages[4]:
         st.dataframe(styled_df)
 
     elif option == "Informations":
-        final_df = load_csv('final_df.csv', header=0)
         df_info = pd.DataFrame({
             "Type de données": final_df.dtypes,
             "Nombre de non nuls": final_df.count(),
             "Pourcentage de non nuls (%)": ((final_df.count() / len(final_df)) * 100).round(2),  # Pourcentage arrondi à 2 chiffres
             "Nombre de valeurs uniques": final_df.nunique()
         })
-        
         st.table(df_info)
-        
         rows, cols = final_df.shape
         st.write(f"Le dataframe contient {rows} lignes et {cols} colonnes.")
 
     elif option == "Valeurs manquantes":
-        final_df = load_csv('final_df.csv', header=0)
         manquantes = final_df.isna().sum().to_frame().T
         st.dataframe(manquantes)
 
     elif option == "Doublons":
-        final_df = load_csv('final_df.csv', header=0)
         num_duplicates = final_df.duplicated().sum()
         st.write(f"Le nombre de doublons est de : {num_duplicates}")
 
@@ -722,63 +604,42 @@ elif page == pages[4]:
         """,
         unsafe_allow_html=True)
 
-    final_df = load_csv('final_df.csv', header=0)
     # Filtrage des données pour ne prendre en compte que celles à partir de l'année 1900
     filtered_final_df = final_df[final_df['Année'] >= 1900]
 
     # Création d'un graphique unique pour toutes les données demandées
-    fig, ax = plt.subplots(figsize=(8, 5))  # Définition de la taille du graphique
+    fig, ax = plt.subplots(figsize=(8, 5))
 
-    # Tracé de la courbe pour la variation de température globale
-    ax.plot(final_df['Année'], final_df['Var. Temp.'], marker='.', linestyle='-',
-            label='Variation Température Globale', color='green')
+    # Tracé des différentes courbes
+    ax.plot(filtered_final_df['Année'], filtered_final_df['Var. Temp.'], marker='.', linestyle='-', label='Variation Température Globale', color='green')
+    ax.plot(filtered_final_df['Année'], filtered_final_df['PIB (Md)'], marker='.', linestyle='-', label='PIB (Md)', color='blue')
+    ax.plot(filtered_final_df['Année'], filtered_final_df['Population (m)'], marker='.', linestyle='--', label='Population (m)', color='purple')
+    ax.plot(filtered_final_df['Année'], filtered_final_df['Total CO2 (mT)'], marker='.', linestyle='-.', label='Total CO2 (mT)', color='red')
 
-    # Tracé de la courbe pour le PIB mondial
-    ax.plot(final_df['Année'], final_df['PIB (Md)'], marker='.', linestyle='-',
-            label='PIB (Md)', color='blue')
-
-    # Tracé de la courbe pour la population mondiale
-    ax.plot(final_df['Année'], final_df['Population (m)'], marker='.', linestyle='--',
-            label='Population (m)', color='purple')
-
-    # Tracé de la courbe pour les émissions totales de CO2
-    ax.plot(final_df['Année'], final_df['Total CO2 (mT)'], marker='.', linestyle='-.',
-            label='Total CO2 (mT)', color='red')
-
-    # Ajout du titre et des étiquettes des axes
-    ax.set_title('Évolution des Données Globales (depuis 1900)')  # Titre du graphique
-    ax.set_xlabel('Année')  # Étiquette pour l'axe des abscisses (x)
-    ax.set_ylabel('Valeurs')  # Étiquette pour l'axe des ordonnées (y)
-    ax.grid(True)  # Activation de la grille pour une meilleure lecture des données
-
-    # Ajout d'une légende pour distinguer les différentes courbes
-    ax.legend(loc = 'center right')
-    # 'upper right', 'upper left', 'lower left', 'lower right', 'right', 'center left', 'center right', 'lower center', 'upper center', 'center'
-
-    # Application d'une échelle logarithmique à l'axe des ordonnées pour mieux gérer les différences de grandeur
+    # Configuration de l'affichage du graphique
+    ax.set_title('Évolution des Données Globales (depuis 1900)')
+    ax.set_xlabel('Année')
+    ax.set_ylabel('Valeurs')
+    ax.grid(True)
+    ax.legend(loc='center right')
     ax.set_yscale('log')
-
-    # Ajustement de la mise en page pour éviter tout chevauchement
     plt.tight_layout()
-
-    # Affichage du graphique final
     st.pyplot(plt)
 
     st.markdown(
         """
         <span style="color: blue; font-weight: bold; text-decoration: underline;">Matrice de corrélation</span><br>
-            """,
+        """,
         unsafe_allow_html=True
     )
 
     correlation_matrix = final_df.corr()
-    # Visualisation de la matrice de corrélation
     plt.figure(figsize=(6, 4))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
     plt.title('Matrice de corrélation des variables (Fichier Modifié)')
     plt.xticks(rotation=45, ha="right")
     st.pyplot(plt)
-    
+
     st.markdown(
         """
         L’analyse de la matrice de corrélation montre que :
@@ -790,136 +651,14 @@ elif page == pages[4]:
                 <br><br>
                 <span style="font-weight: bold; text-decoration: underline;">CO² total</span> : Corrélation très forte avec la Population (0.997) : Cela indique que l’augmentation de la population est un facteur majeur des émissions de CO². Corrélation très forte avec le PIB (0,96) : L’augmentation économique s’accompagne souvent d’une augmentation des émissions de CO², probablement due à une intensification de l’industrialisation.
                 <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">Année</span> : Corrélation élevée avec le Var. Temp. (0.87), Population (0.94) , et Total CO² (0.95) : Cela indique que sur la période étudiée, la population, les émissions de CO², et la température ont toutes montré une augmentation continue au fil du temps.
-                <br><br>
+                <span style="font-weight: bold; text-decoration: underline;">Année</span> : Corrélation élevée avec le Var. Temp. (0.87), Population (0.94), et Total CO² (0.95) : Cela indique que sur la période étudiée, la population, les émissions de CO², et la température ont toutes montré une augmentation continue au fil du temps.
                 </p>
             </span>
-            <p class="justified-text">
-            Les corrélations fortes observées montrent des relations étroites entre l’évolution économique, démographique et environnementale, avec des impacts directs sur les variations de température.
-            </p>
         <br><br>
         <span style="color: blue; font-weight: bold; text-decoration: underline;">Métriques</span><br>
-            """,
-        unsafe_allow_html=True
-    )
-
-    # Extraire les colonnes pertinentes
-    years = final_df['Année']
-    population = final_df['Population (m)']
-    pib = final_df['PIB (Md)']
-    co2 = final_df['Total CO2 (mT)']
-    glob = final_df['Var. Temp.']
-
-    # Créer une figure avec une disposition 2x2
-    plt.figure(figsize=(10, 8))
-
-    # Tracer l'évolution de la population par année (Graphique 1)
-    plt.subplot(2, 2, 1)
-    plt.plot(years, population, label='Population (Md)')
-    plt.title('Evolution de la population par année')
-    # plt.xlabel('Année')
-    plt.ylabel('Population (en milliards)')
-    plt.grid(True)
-    plt.legend()
-
-    # Tracer l'évolution du PIB par année (Graphique 2)
-    plt.subplot(2, 2, 2)
-    plt.plot(years, pib, label='PIB (Md)', color='orange')
-    plt.title('Evolution du PIB par année')
-    # plt.xlabel('Année')
-    plt.ylabel('PIB (en milliards de dollars)')
-    plt.grid(True)
-    plt.legend()
-
-    # Tracer l'évolution des émissions de CO2 par année (Graphique 3)
-    plt.subplot(2, 2, 3)
-    plt.plot(years, co2, label='CO2 (MdT)', color='green')
-    plt.title('Evolution des émissions de CO2 par année')
-    # plt.xlabel('Année')
-    plt.ylabel('CO2 (en milliards de tonnes)')
-    plt.grid(True)
-    plt.legend()
-
-    # Tracer l'évolution des variations de températures (Graphique 4)
-    plt.subplot(2, 2, 4)
-    plt.plot(years, glob, label='Température globale', color='red')
-    plt.title('Changement de la température moyenne mondiale')
-    # plt.xlabel('Année')
-    plt.ylabel('Variation de température (°C)')
-    plt.grid(True)
-    plt.legend()
-
-    # Ajuster l'espacement entre les sous-graphiques
-    plt.tight_layout()
-
-    # Afficher la figure
-    st.pyplot(plt)
-
-    st.markdown(
-        """
-        Les tendances temporelles montrent que :
-            <br><br>
-            <span style="margin-left:20px; display: inline-block;">
-                <p class="justified-text">
-                <span style="font-weight: bold; text-decoration: underline;">Variation de Température</span> : Une augmentation progressive, surtout marquée à partir du milieu du 20ème siècle.
-                <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">Émissions de CO²</span> : Une augmentation continue, surtout après les années 1950.
-                <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">Population mondiale</span> : Une forte croissance, surtout au cours du 20ème siècle.
-                <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">PIB mondial</span> : Une montée rapide, en particulier dans la seconde moitié du 20ème siècle, démontrant une croissance économique mondiale soutenue.
-                </p>
-            </span>
-        <br><br>
-        <span style="color: blue; font-weight: bold; text-decoration: underline;">Analyse visuelle</span><br>
-            """,
-        unsafe_allow_html=True
-    )
-
-    # Analyse des corrélations visuelles entre la variable cible et les prédicteurs
-    plt.figure(figsize=(9, 6))
-
-    # Relation entre Var. Temp. et PIB
-    plt.subplot(2, 2, 1)
-    sns.scatterplot(x=final_df['PIB (Md)']/1000, y=final_df['Var. Temp.'], color='green')
-    plt.title('Relation Var. Température / PIB')
-    plt.xlabel('PIB (trilliards)')
-    plt.ylabel('Variation Température (°C)')
-
-    # Relation entre Var. Temp. et Population
-    plt.subplot(2, 2, 2)
-    sns.scatterplot(x=final_df['Population (m)']/1000, y=final_df['Var. Temp.'], color='orange')
-    plt.title('Relation Var. Température / Population')
-    plt.xlabel('Population (En milliards)')
-    plt.ylabel('Variation Température (°C)')
-
-    # Relation entre Var. Temp. et Total CO2
-    plt.subplot(2, 2, 3)
-    sns.scatterplot(x=final_df['Total CO2 (mT)']/1000, y=final_df['Var. Temp.'], color='red')
-    plt.title('Relation Var. Température / Émissions de CO²')
-    plt.xlabel('Total CO² (milliards de tonnes)')
-    plt.ylabel('Variation Température (°C)')
-
-    plt.tight_layout()
-    st.pyplot(plt)
-
-    st.markdown(
-        """
-        Les tendances temporelles montrent que :
-            <br><br>
-            <span style="margin-left:20px; display: inline-block;">
-                <p class="justified-text">
-                <span style="font-weight: bold; text-decoration: underline;">Variation de Température vs PIB</span> : Une relation positive claire : à mesure que le PIB augmente, la variation de température tend à augmenter. Cela indique que la croissance économique est associée à des variations de température plus élevées.
-                <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">Variation de Température vs Population</span> : Relation positive similaire : une augmentation de la population est liée à une augmentation des variations de température, probablement en raison d’une demande accumulée en ressources et des impacts environnementaux associés.
-                <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">Variation de Température vs Émissions de CO² </span> : La relation positive est évidente : des niveaux plus élevés d’émissions de CO² correspondant à des augmentations plus importantes de la température, ce qui renforce l’hypothèse d’un lien entre les émissions de gaz à effet de serre et le réchauffement climatique.
-                </p>
-            </span>
-        <br><br>
-        <span style="color: blue; font-weight: bold; text-decoration: underline;">Métriques de performance</span><br>
         """,
-        unsafe_allow_html=True)
+        unsafe_allow_html=True
+    )
 
     # Exécution du modèle
     X = final_df[['PIB (Md)', 'Population (m)', 'Total CO2 (mT)']]
@@ -927,7 +666,6 @@ elif page == pages[4]:
 
     model = LinearRegression()
     model.fit(X, y)
-
     y_pred = model.predict(X)
 
     # Calcul des métriques de performance
@@ -944,9 +682,8 @@ elif page == pages[4]:
         'R² (Coefficient de détermination)': r2
     }
 
-    # Transformer en DataFrame pour un affichage propre
     performance_df = pd.DataFrame(performance_metrics.items(), columns=["Métrique", "Valeur"])
-    performance_df['Valeur'] = performance_df['Valeur'].map("{:.3f}".format)  # Formatage pour trois décimales
+    performance_df['Valeur'] = performance_df['Valeur'].map("{:.3f}".format)
 
     # Afficher avec Streamlit
     st.table(performance_df)
@@ -957,16 +694,15 @@ elif page == pages[4]:
             <br><br>
             <span style="margin-left:20px; display: inline-block;">
                 <p class="justified-text">
-                <span style="font-weight: bold; text-decoration: underline;">MAE</span> : 0.095, indiquant une erreur moyenne absolue d’environ 0.095°C entre les prédictions et les valeurs réelles.
+                <span style="font-weight: bold; text-decoration: underline;">MAE</span> : Indique une erreur moyenne absolue entre les prédictions et les valeurs réelles.
                 <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">MSE</span> : 0.014, ce qui représente la moyenne des erreurs quadratiques. Plus cette valeur est proche de zéro, mieux le modèle est ajusté.
+                <span style="font-weight: bold; text-decoration: underline;">MSE</span> : Représente la moyenne des erreurs quadratiques. Plus cette valeur est proche de zéro, mieux le modèle est ajusté.
                 <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">RMSE</span> : 0.116, ce qui donne une idée de la taille des erreurs en utilisant la même unité que la variable cible (degrés Celsius).
+                <span style="font-weight: bold; text-decoration: underline;">RMSE</span> : Donne une idée de la taille des erreurs en utilisant la même unité que la variable cible (degrés Celsius).
                 <br><br>
-                <span style="font-weight: bold; text-decoration: underline;">R²</span> : 0.906, indiquant que le modèle explique environ 90,6% de la variance des données.
+                <span style="font-weight: bold; text-decoration: underline;">R²</span> : Indique que le modèle explique une part significative de la variance des données.
                 </p>
             </span>
-            
         """,
         unsafe_allow_html=True)
 
@@ -974,11 +710,14 @@ elif page == pages[4]:
 # PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+# Votre code Streamlit
 elif page == pages[5]:
 
     st.write("## Modélisations")
 
-    data = load_csv('final_df10.csv', header=0)
+    # Charger le fichier CSV avec chemin relatif
+    csv_path = BASE_DIR / 'final_df10.csv'
+    data = load_csv(csv_path, header=0)
 
     # Description
     st.write("""
@@ -986,7 +725,7 @@ elif page == pages[5]:
         pour entraîner un modèle de régression pour prédire 'Var. Temp.' en utilisant différents types de régression.
     """)
 
-    # Liste des variables explicatives sans le PIB
+    # Liste des variables explicatives sans le PIB et la variable cible
     variables_disponibles = [col for col in data.columns if col not in ['PIB (Md)', 'Var. Temp.']]
     variables_choisies = st.multiselect("Choisissez les variables explicatives :", variables_disponibles, format_func=lambda x: x)
 
@@ -996,7 +735,7 @@ elif page == pages[5]:
 
     # Menu de sélection du type de régression
     modele_selectionne = st.selectbox("Sélectionnez le modèle de régression :", 
-                                    ["Régression Linéaire", "Lasso", "Ridge", "Régression Polynomiale", "Forêt Aléatoire"])
+                                      ["Régression Linéaire", "Lasso", "Ridge", "Régression Polynomiale", "Forêt Aléatoire"])
 
     # Filtrer les données en fonction de l'année de départ
     data_filtre = data[data['Année'] >= annee_depart]
@@ -1077,7 +816,9 @@ elif page == pages[6]:
 
     st.write("## Prédictions")
 
-    data = load_csv('final_df10.csv', header=0)
+    # Charger le fichier CSV avec chemin relatif
+    csv_path = BASE_DIR / 'final_df10.csv'
+    data = load_csv(csv_path, header=0)
 
     # Description
     st.write("""
@@ -1095,7 +836,7 @@ elif page == pages[6]:
 
     # Menu de sélection du type de régression
     modele_selectionne = st.selectbox("Sélectionnez le modèle de régression :", 
-                                    ["Régression Linéaire", "Lasso", "Ridge", "Régression Polynomiale", "Forêt Aléatoire"])
+                                      ["Régression Linéaire", "Lasso", "Ridge", "Régression Polynomiale", "Forêt Aléatoire"])
 
     # Filtrer les données en fonction de l'année de départ
     data_filtre = data[data['Année'] >= annee_depart]
@@ -1137,7 +878,6 @@ elif page == pages[6]:
         # Simuler des valeurs futures pour les variables explicatives
         for var in variables_choisies:
             if var != 'Année':
-                # Projeter une tendance linéaire pour les variables numériques
                 coef_tendance = (data_filtre[var].iloc[-1] - data_filtre[var].iloc[0]) / (data_filtre['Année'].iloc[-1] - data_filtre['Année'].iloc[0])
                 annees_futures[var] = data_filtre[var].iloc[-1] + coef_tendance * (annees_futures['Année'] - data_filtre['Année'].iloc[-1])
         
@@ -1160,11 +900,11 @@ elif page == pages[6]:
             st.dataframe(coeff_df)
 
         # Sauvegarder les variables explicatives choisies
-        with open('variables_explicatives.pkl', 'wb') as file:
+        with open(BASE_DIR / 'variables_explicatives.pkl', 'wb') as file:
             pickle.dump(variables_choisies, file)
 
         # Sauvegarder le modèle entraîné
-        with open('modele_entraine.pkl', 'wb') as file:
+        with open(BASE_DIR / 'modele_entraine.pkl', 'wb') as file:
             pickle.dump(modele, file)
         
         # Affichage des prédictions par rapport aux années avec matplotlib
@@ -1230,7 +970,7 @@ elif page == pages[7]:
         unsafe_allow_html=True
     )
 
-        # Charger les données ONU depuis votre fichier CSV
+    # Charger les données ONU depuis le fichier CSV
     onu_population = load_csv('onu_population.csv', sep=';', encoding='ISO-8859-1')
 
     # Calcul du total de la population par année
@@ -1247,7 +987,7 @@ elif page == pages[7]:
 
     # Annotation du nombre tous les 20 ans, y compris la dernière année, sans la première valeur
     for year in list(range(2044, 2101, 20)) + [2100]:  # Commence à 2044 pour exclure 2024
-        population = total_population_by_year[year]
+        population = total_population_by_year.get(year, 0)
         plt.text(year, population - 250, f'{population:,.0f}', fontsize=10, ha='center', va='bottom', color='blue')
 
     # Ajustement du layout
@@ -1269,46 +1009,6 @@ elif page == pages[7]:
         """,
         unsafe_allow_html=True
     )
-
-        # Charger les données ONU depuis votre fichier CSV
-#    df4 = load_csv('df4.csv')
-#
-    # Restreindre les données aux colonnes d'intérêt et aux années 1950 à 2022
-#   df_filtered = df4[(df4['Année'] >= 1950) & (df4['Année'] <= 2022)]
-#    variables = ['Charbon', 'Gaz', 'Pétrole']
-#
-    # Créer un modèle de régression linéaire pour chaque variable
-#   predictions = {}
-#    future_years = np.arange(2023, 2101).reshape(-1, 1)
-
-#    for var in variables:
-#        df_var = df_filtered[['Année', var]].dropna()
-#        X = df_var['Année'].values.reshape(-1, 1)
-#        y = df_var[var].values
-#        model = LinearRegression()
-#        model.fit(X, y)
-#        predictions[var] = model.predict(future_years)
-
-    # Tracer les données historiques et les prédictions
-#    plt.figure(figsize=(14, 8))
-
-#    couleurs = ['b', 'g', 'r', 'c', 'm', 'y', 'k']  # Couleurs pour chaque variable
-
-#    for i, var in enumerate(variables):
-#        couleur = couleurs[i % len(couleurs)]  # Associer une couleur unique par variable
-        # Tracer les données historiques
-#        plt.plot(df_filtered['Année'], df_filtered[var], label=f"{var} (historique)", color=couleur, linewidth=2)
-        # Tracer les prédictions avec la même couleur
-#        plt.plot(future_years, predictions[var], linestyle='--', color=couleur, label=f"{var} (prédiction)", linewidth=1)
-
-    # Modifier la légende
-#    plt.xlabel("Année")
-#    plt.ylabel("Emissions (unités)")
-#    plt.title("Émissions de CO² par secteur (1950-2100)", fontsize=16)
-#    plt.legend(loc='upper left')
-#    plt.grid(True)
-
- #   st.pyplot(plt)
 
     st.markdown(
         """
@@ -1350,15 +1050,17 @@ elif page == pages[7]:
     plt.bar(df_75_years['Année'], df_75_years['Cumul CO2 équivalent (millions de tonnes)'], color='lightblue', label='Cumul CO2 équivalent')
     plt.plot(df_75_years['Année'], df_75_years['Cumul CO2 équivalent (millions de tonnes)'], color='blue', marker='o', label='Courbe Cumul CO2 équivalent')
 
-    plt.title('Histogramme et courbe du cumul CO² équivalent sur 75 ans', fontsize=16)
+    plt.title('Histogramme et courbe du cumul CO² équivalent sur 75 ans', fontsize=12)
     plt.xlabel('Année')
-    plt.ylabel('Cumul CO2 équivalent (Gigatonnes)', fontsize=16)
+    plt.ylabel('Cumul CO2 équivalent (Gigatonnes)', fontsize=12)
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.legend()
 
     st.pyplot(plt)
 
-    print(df_75_years.head())
+    # Affichage du début du DataFrame
+    # st.write("Aperçu du DataFrame :")
+    # st.dataframe(df_75_years.head())
 
 
 # PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8 *** PAGE 8  *** PAGE 8
