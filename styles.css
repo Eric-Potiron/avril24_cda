@@ -1,0 +1,84 @@
+/* Général */
+body {
+    font-family: "Arial", sans-serif;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Sidebar */
+.stSidebar {
+    background-color: #f0f2f6;
+    padding: 15px;
+    border-right: 2px solid #ddd;
+}
+
+.stSidebar h1, .stSidebar h2, .stSidebar h3 {
+    color: #333;
+}
+
+/* Contenu principal */
+.container {
+    padding: 20px;
+}
+
+/* Justification de texte */
+.justified-text {
+    text-align: justify;
+    margin-bottom: 15px;
+}
+
+/* Titres et sous-titres */
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-top: 20px;
+}
+
+/* Lignes de séparation */
+.separator {
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
+
+/* Tableaux */
+.dataframe {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.dataframe th, .dataframe td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* Liens */
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Graphiques */
+.graph-container {
+    margin: 20px 0;
+}
+
+/* Boutons */
+.stButton button {
+    background-color: #007BFF;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.stButton button:hover {
+    background-color: #0056b3;
+}
