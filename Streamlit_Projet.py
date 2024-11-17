@@ -111,7 +111,82 @@ elif page == pages[1]: # PAGE 1 *** Jeux de données sources ***
     # Exemple d'affichage dynamique pour chaque fichier CSV
     for csv_name, csv_path in csv_files.items():
         if st.checkbox(f"### 📁 **{csv_name}**"):
-            header = 0 if 'gdp' in csv_name or 'co2' in csv_name else 1
+            # Afficher les informations Source et Accès libre pour les fichiers spécifiques
+            if 'Zonal annual' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : https://data.giss.nasa.gov/gistemp/")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Ce fichier présente les moyennes mensuelles, saisonnières et annuelles des variations de température pour l'ensemble de la planète. Les données proviennent de diverses sources, telles que les stations météorologiques et les relevés océaniques, fournissant un aperçu détaillé des tendances climatiques dans cette région.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+
+            elif 'Southern Hemisphere' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : https://data.giss.nasa.gov/gistemp/")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Le fichier contient des données sur les variations mensuelles, saisonnières et annuelles des températures moyennes pour l'hémisphère sud. Ces informations sont collectées à partir de nombreux points de mesure dans l'hémisphère nord, offrant un aperçu des changements climatiques et des tendances saisonnières.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+
+            elif 'Northern Hemisphere' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : https://data.giss.nasa.gov/gistemp/")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Le fichier contient des données sur les variations mensuelles, saisonnières et annuelles des températures moyennes pour l'hémisphère nord. Ces informations sont collectées à partir de nombreux points de mesure dans l'hémisphère nord, offrant un aperçu des changements climatiques et des tendances saisonnières.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            
+            elif 'Global-mean' in csv_name:
+                st.write("Source : NASA")
+                st.write("Accès libre : https://data.giss.nasa.gov/gistemp/")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Ce fichier contient des données globales sur les moyennes mensuelles, saisonnières et annuelles des variations de température. Il intègre des données terrestres et océaniques pour fournir une vision complète des tendances de la température à l'échelle mondiale.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+
+            # Informations spécifiques pour d'autres fichiers
+            elif 'gdp' in csv_name:
+                st.write("Source : OCDE")
+                st.write("Accès libre : https://ourworldindata.org/")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Ce fichier donne une vision de l’évolution du PIB mondial en dollars constants depuis l’an 1 jusqu’à 2022. Ces estimations historiques du PIB sont ajustées en fonction de l'inflation. Trois sources sont combinées pour créer cette série chronologique : la base de données Maddison (avant 1820), la base de données du projet Maddison (1820-1989) et la Banque mondiale (à partir de 1890). Le terme $ US constants désigne un $ US ayant un pouvoir d’achat constant dans le temps, et donc corrigé de l’impact de la variation des prix.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+            elif 'co2' in csv_name:
+                st.write("Source : Our World in Data")
+                st.write("Accès libre : https://github.com/owid/co2-data")
+                st.markdown(
+                    """
+                    <p class="justified-text">
+                    Ce fichier contient des données sur les émissions de CO2 à travers le monde, couvrant des décennies de suivi des émissions par pays et par secteur.
+                    Il contient également des détails sur la part des émissions mondiales de CO2 par source, l'impact sur le changement de température dû aux gaz à effet de serre (comme le CO2, CH4, et N2O), et d'autres indicateurs annuels par pays comme le PIB et la population.
+                    </p>
+                    """, 
+                    unsafe_allow_html=True
+                )
+
+            # Chargement et affichage du DataFrame
+            header = 0 if 'Zonal' in csv_name or 'gdp' in csv_name or 'co2' in csv_name else 1
             df = load_csv(csv_path, header=header)
 
             rows, cols = df.shape
@@ -126,37 +201,14 @@ elif page == pages[1]: # PAGE 1 *** Jeux de données sources ***
             info.columns = info.iloc[0]
             info = info[1:]
 
-            st.write(f"**Le dataframe contient** {rows} lignes et {cols} colonnes.")
-            st.write(f"Le nombre de **doublons** est de : {num_duplicates}")
+            # Affichage des détails du DataFrame
+            st.write(f"**Le dataframe contient** {rows} lignes et {cols} colonnes. Le nombre de **doublons** est de : {num_duplicates}")
             st.write(f"**Valeurs manquantes :**")
             st.dataframe(manquantes)
             st.write(f"**Informations :**")
             st.dataframe(info)
-            st.write(f"**En tête :**")  
+            st.write(f"**En tête :**")
             st.write(df.head())
-
-            if 'Zonal' in csv_name:
-                st.write("Source : NASA")
-                st.write("Accès libre : [NASA Data](https://data.giss.nasa.gov/gistemp/)")
-                st.markdown(
-                    """
-                    <p class="justified-text">
-                    Le fichier contient des données annuelles moyennes de variations de température pour différentes régions du globe, de 1880 à une date récente. La NASA collecte ces données via divers moyens tels que des stations météorologiques, des bouées océaniques, et des satellites.
-                    </p>
-                    """, 
-                    unsafe_allow_html=True
-                )
-            elif 'gdp' in csv_name:
-                st.write("Source : OCDE")
-                st.write("Accès libre : [Our World in Data](https://ourworldindata.org/)")
-                st.markdown(
-                    """
-                    <p class="justified-text">
-                    Ce fichier donne une vision de l’évolution du PIB mondial depuis l’an 1 jusqu’à 2022, ajusté en fonction de l'inflation.
-                    </p>
-                    """, 
-                    unsafe_allow_html=True
-                )
 
 
 # PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2 *** PAGE 2  *** PAGE 2
@@ -238,7 +290,7 @@ elif page == pages[2]: # PAGE 2 *** Pertinence des données ***
     if show_all or st.checkbox("Évolution du PIB mondial à partir de 1850"):
         df_gdp = pd.read_csv(csv_paths["Global GDP"], header=0)
         df_gdp_filtered = df_gdp[df_gdp['Year'] >= 1850]
-        df_gdp_filtered['GDP'] = df_gdp_filtered['GDP'].astype(float) / 1e9  # Conversion en milliards
+        df_gdp_filtered['GDP'] = pd.to_numeric(df_gdp_filtered['GDP'], errors='coerce') / 1e9  # Conversion en milliards
 
         plt.figure(figsize=(10, 5))
         plt.plot(df_gdp_filtered['Year'], df_gdp_filtered['GDP'], color='purple', marker='.', linestyle='-')
@@ -277,6 +329,10 @@ elif page == pages[2]: # PAGE 2 *** Pertinence des données ***
             unsafe_allow_html=True
         )
 
+    # Chargement des données OWID CO2 avant toute utilisation
+    df_co2 = pd.read_csv(csv_paths["OWID CO2 data"], header=0)
+    df_co2_world = df_co2[df_co2['country'] == 'World']
+
     # 5. Émissions mondiales de CO² par source (à partir de 1900)
     if show_all or st.checkbox("Émissions mondiales de CO² par source (à partir de 1900)"):
         columns_of_interest = ['year', 'cement_co2', 'coal_co2', 'flaring_co2', 'gas_co2', 
@@ -291,6 +347,8 @@ elif page == pages[2]: # PAGE 2 *** Pertinence des données ***
             'oil_co2': 'CO2 Pétrole',
             'other_industry_co2': 'CO2 Autres Industries'
         }
+
+        # Extraire et renommer les colonnes
         df_co2_sources = df_co2_world[columns_of_interest].rename(columns=rename_dict)
         df_co2_sources = df_co2_sources[df_co2_sources['Année'] >= 1900]
 
@@ -367,7 +425,7 @@ elif page == pages[3]: # PAGE 3 *** Préparation des données ***
     st.markdown(
         """
         <div class="justified-text">
-            Afin de préparer notre travail de modélisation, trois fichiers sont retenus :
+            Trois fichiers de données ont été préparés pour la modélisation. Les fichiers ont été filtrés et renommés pour ne garder que les colonnes pertinentes, et des périodes spécifiques (1850-2023) ont été sélectionnées. Ensuite, les fichiers ont été fusionnés pour permettre la comparaison des variations de température dues au CO2 avec les données observées. Enfin, un graphique a été tracé pour visualiser ces comparaisons de manière claire et informative.
             <br><br>
             <ol>
                 <li>
@@ -523,58 +581,45 @@ elif page == pages[4]: # PAGE 4 *** Dataset final & DataVizualization ***
     filtered_final_df = final_df[final_df['Année'] >= 1900]
 
     # Création d'un graphique combiné pour les variables pertinentes
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax1 = plt.subplots(figsize=(12, 6))
 
-    # Tracé des courbes des différentes variables
-    ax.plot(filtered_final_df['Année'], filtered_final_df['Var. Temp.'], label='Variation Température Globale', color='green', linestyle='-', marker='.')
-    ax.plot(filtered_final_df['Année'], filtered_final_df['PIB (Md)'], label='PIB (Md)', color='blue', linestyle='-', marker='.')
-    ax.plot(filtered_final_df['Année'], filtered_final_df['Population (m)'], label='Population (m)', color='purple', linestyle='--', marker='.')
-    ax.plot(filtered_final_df['Année'], filtered_final_df['Total CO2 (mT)'], label='Total CO2 (mT)', color='red', linestyle='-.', marker='.')
+    # Tracé des courbes des variables 'PIB', 'Population' et 'Total CO2'
+    ax1.plot(filtered_final_df['Année'], filtered_final_df['PIB (Md)'], label='PIB (Md)', color='blue', linestyle='-', marker='.')
+    ax1.plot(filtered_final_df['Année'], filtered_final_df['Population (m)'], label='Population (m)', color='purple', linestyle='--', marker='.')
+    ax1.plot(filtered_final_df['Année'], filtered_final_df['Total CO2 (mT)'], label='Total CO2 (mT)', color='red', linestyle='-.', marker='.')
 
-    # Configurer les axes et le titre
-    ax.set_title("Évolution des Données Globales depuis 1900")
-    ax.set_xlabel("Année")
-    ax.set_ylabel("Valeurs (log)")
-    ax.set_yscale('log')  # Échelle logarithmique pour une meilleure visualisation
-    ax.grid(True)
-    ax.legend(loc='best')
+    # Configuration de l'axe y principal
+    ax1.set_xlabel("Année")
+    ax1.set_ylabel("Valeurs (log)", color='black')
+    ax1.set_yscale('log')  # Échelle logarithmique pour une meilleure visualisation
+    ax1.grid(True)
+    ax1.legend(loc='upper left')
 
+    # Création d'un second axe y pour la variation de la température
+    ax2 = ax1.twinx()
+    ax2.plot(filtered_final_df['Année'], filtered_final_df['Var. Temp.'], label='Variation Température Globale', color='green', linestyle='-', marker='.')
+    ax2.set_ylabel("Variation de Température (°C)", color='green')
+    ax2.tick_params(axis='y', labelcolor='green')
+
+    # Ajouter une légende pour l'axe secondaire
+    ax2.legend(loc='upper center')
+
+    # Affichage du graphique
     st.pyplot(plt)
 
-    # Matrice de corrélation
+   # Ajout d'observations sur les données
     st.markdown(
         """
-        <span style="color: blue; font-weight: bold; text-decoration: underline;">Matrice de corrélation</span>
-        """,
-        unsafe_allow_html=True
-    )
-
-    correlation_matrix = final_df.corr()
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
-    plt.title('Matrice de corrélation des variables')
-    plt.xticks(rotation=45, ha="right")
-    st.pyplot(plt)
-
-    st.markdown(
-        """
+        <span style="color: blue; font-weight: bold; text-decoration: underline;">Analyse des métriques de performance</span>
         <div class="justified-text">
-            L'analyse de la matrice de corrélation révèle des liens significatifs entre certaines variables. Par exemple, une corrélation forte entre la population mondiale et les émissions de CO2, ainsi qu'entre le PIB et la température globale, soulignant l'impact économique et démographique sur l'environnement.
+        Calcul des métriques de performance d'un modèle de régression linéaire avec Population et Total CO2 pour variables explicatives (X) et Var. Temp. pour variable cible (y). 
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Affichage des métriques de performance du modèle linéaire
-    st.markdown(
-        """
-        <span style="color: blue; font-weight: bold; text-decoration: underline;">Métriques de performance du modèle</span>
-        """,
-        unsafe_allow_html=True
-    )
-
     # Création et évaluation du modèle
-    X = final_df[['PIB (Md)', 'Population (m)', 'Total CO2 (mT)']]
+    X = final_df[['Population (m)', 'Total CO2 (mT)']]
     y = final_df['Var. Temp.']
 
     model = LinearRegression()
@@ -598,15 +643,50 @@ elif page == pages[4]: # PAGE 4 *** Dataset final & DataVizualization ***
     performance_df['Valeur'] = performance_df['Valeur'].map("{:.3f}".format)
     st.table(performance_df)
 
+   # Ajout d'observations sur les données
     st.markdown(
         """
         <div class="justified-text">
-            Ces métriques illustrent la capacité du modèle linéaire à prédire la variable de température à partir des variables explicatives choisies. Un coefficient R² élevé indique que le modèle explique une part importante de la variance observée dans les données.
+             L'erreur moyenne absolue <b><u>(MAE)</u></b> est de 0.097 signifie qu'en moyenne les prédictions de la variation de température (Var. Temp.) diffèrent des valeurs réelles de 0.097 unités. C'est donc que le modèle est assez précis dans ses prédictions.<br>
+             La moyenne des carrés des erreurs <b><u>(MSE)</u></b> est de 0.015, ce qui est faible et indique le modèle ne commet pas de grandes erreurs importantes dans ses prédictions.<br>
+             La racine carrée de la MSE <b><u>(RMSE)</u></b> est de 0.121, ce qui est faible et confirme que le modèle est globalement précis.<br>
+             Le Coefficient de détermination <b><u>(R²)</u></b> de 0.898 montre que le modèle explique environ 89.8% de la variance de la variation de température (Var. Temp.) à partir des variables de population et des émissions de CO2. Cela signifie que le modèle a un bon pouvoir explicatif et capture efficacement la relation entre les variables indépendantes et la variable dépendante.<br><br>
+             <u><b>Conclusion</u></b> : Le choix du modèle semble bien s'ajuster aux données, ce qui suggère que la population et les émissions de CO2 ont une forte capacité à prédire la variation de température.<br><br>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )    
+
+    st.markdown(
+        """
+        <span style="color: blue; font-weight: bold; text-decoration: underline;">Analyse des matrices de corrélation</span>
+        <div class="justified-text">
+        La matrice de corrélation de Pearson est la plus pertinente, car le choix se porte sur la recherche de relation linéaire.
+        <br> Les matrices de Spearman et Kendall sont données à titre indicatif.
         </div>
         """,
         unsafe_allow_html=True
     )
+    # Calcul et affichage des matrices de corrélation
+    correlation_methods = ['pearson', 'spearman', 'kendall']
 
+    for method in correlation_methods:
+        corr_matrix = filtered_final_df.corr(method=method)
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+        plt.xticks(rotation=45, ha="right")
+        mean_corr = corr_matrix.abs().mean().mean()
+
+        # Utiliser st.columns() pour organiser l'affichage en colonnes
+        col1, col2 = st.columns(2)
+        
+        # Afficher la matrice
+        with col1:
+             st.markdown(f"<span style='color: red; font-weight: bold;'>Matrice de {method.capitalize()}</span>", unsafe_allow_html=True)
+        with col2:
+             st.write(f"Moyenne absolue des corrélations : {mean_corr:.4f}")   
+        st.pyplot(plt)
+        
 
 # PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5 *** PAGE 5  *** PAGE 5
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
