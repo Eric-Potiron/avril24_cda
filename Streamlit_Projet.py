@@ -268,6 +268,7 @@ elif page == pages[2]: # PAGE 2 *** Pertinence des données ***
 
     # 2. Variations des températures pour les hémisphères Nord et Sud
     if show_all or st.checkbox("Variations mondiales des températures pour les hémisphères Nord et Sud"):
+        df_temp = pd.read_csv(csv_paths["Zonal annual means"], header=0)
         plt.figure(figsize=(10, 5))
         plt.plot(df_temp['Year'], df_temp['NHem'], color='green', marker='.', linestyle='-', label='Hémisphère Nord')
         plt.plot(df_temp['Year'], df_temp['SHem'], color='orange', marker='.', linestyle='-', label='Hémisphère Sud')
